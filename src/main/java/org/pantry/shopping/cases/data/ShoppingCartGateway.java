@@ -15,4 +15,6 @@ public interface ShoppingCartGateway {
     Optional<CartItem> findSimilar(CartItem increment);
 
     CartItem updateItem(CartItem item);
+
+    void removeSimilar(CartItem item);
 }

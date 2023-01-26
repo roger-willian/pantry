@@ -10,4 +10,6 @@ public interface UCFactory {
     ViewCartUC getViewCartUC();
 
     FetchToCartUC getFetchToCartUC();
+
+    ReturnFromCartUC getReturnFromCartUC();
 }

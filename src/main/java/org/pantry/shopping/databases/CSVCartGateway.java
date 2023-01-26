@@ -73,4 +73,11 @@ public class CSVCartGateway extends CSVGateway<CartItem> implements ShoppingCart
         storeItems();
         return item;
     }
+
+    @Override
+    public void removeSimilar(CartItem item) {
+        loadItems();
+        items.removeIf(item::isSimilar);
+        storeItems();
+    }
 }

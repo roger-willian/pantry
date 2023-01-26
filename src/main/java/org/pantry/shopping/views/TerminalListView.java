@@ -21,6 +21,7 @@ public class TerminalListView implements TextListView {
     }
 
     private void clear() {
-        System.out.println(System.lineSeparator().repeat(100));
+        System.out.println("***");
+//        System.out.println(System.lineSeparator().repeat(100));
     }
 }

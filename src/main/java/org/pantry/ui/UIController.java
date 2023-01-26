@@ -45,6 +45,7 @@ public class UIController {
 
     private void accessShoppingCart() {
         Menu cartMenu = new Menu("Shopping Cart");
+        cartMenu.addItem("return item to list", this::returnFromShoppingCart);
         cartMenu.setBackOption("back to list");
         cartMenu.setBeforeAction(this::viewShoppingCart);
         cartMenu.select();
@@ -62,6 +63,16 @@ public class UIController {
         Date expirationDate = Prompt.ask("Expires when (dd/mm/yyyy)?", this::parseDate, this::isValidDate);
         Integer expiration = Integer.parseInt(new SimpleDateFormat("yyyyMMdd").format(expirationDate));
         controller.fetchToShoppingCart(quantity, unit, name, (int) (pricePerUnit*100), expiration);
+    }
+
+    private void returnFromShoppingCart() {
+        String name = Prompt.ask("Which product?");
+        String unit = Prompt.ask("Which unit?");
+        Double quantity = Prompt.ask("How much/many?", Double::parseDouble);
+        Double pricePerUnit = Prompt.ask("How much it costs?", Double::parseDouble, this::isPositive);
+        Date expirationDate = Prompt.ask("Expires when (dd/mm/yyyy)?", this::parseDate, this::isValidDate);
+        Integer expiration = Integer.parseInt(new SimpleDateFormat("yyyyMMdd").format(expirationDate));
+        controller.returnFromShoppingCart(quantity, unit, name, (int) (pricePerUnit*100), expiration);
     }
 
     private boolean isPositive(Double value) {

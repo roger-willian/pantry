@@ -49,4 +49,10 @@ public class ShoppingController {
         FetchToCartRequest request = new FetchToCartRequest(quantity, unit, name, pricePerUnit, expiration);
         uc.execute(request);
     }
+
+    public void returnFromShoppingCart(Double quantity, String unit, String name, Integer pricePerUnit, Integer expiration) {
+        ReturnFromCartUC uc = cases.getReturnFromCartUC();
+        ReturnFromCartRequest request = new ReturnFromCartRequest(quantity, unit, name, pricePerUnit, expiration);
+        uc.execute(request);
+    }
 }
