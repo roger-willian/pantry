@@ -7,8 +7,8 @@ import org.pantry.shopping.databases.CSVCartGateway;
 import org.pantry.shopping.databases.CSVListGateway;
 
 public class GatewaysConfiguration implements GatewaysFactory {
-    static ShoppingListGateway shoppingListDB = new CSVListGateway("shoppingList.csv");
-    static ShoppingCartGateway shoppingCartDB = new CSVCartGateway("shoppingCart.csv");
+    private static ShoppingListGateway shoppingListDB = new CSVListGateway("shoppingList.csv");
+    private static ShoppingCartGateway shoppingCartDB = new CSVCartGateway("shoppingCart.csv");
 
     @Override
     public ShoppingListGateway getShoppingListGateway() {

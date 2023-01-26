@@ -16,7 +16,7 @@ public class ViewListImpl implements ViewListUC {
         this.db = databases.getShoppingListGateway();
     }
     public List<ListItemResponse> execute(ViewListRequest req) {
-        List<ListItem> items = db.allListItems();
+        List<ListItem> items = db.findAll();
         return items
                 .stream()
                 .map(it -> new ListItemResponse(it.quantity(), it.unit(), it.name()))

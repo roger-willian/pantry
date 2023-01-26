@@ -1,9 +1,8 @@
 package org.pantry.configuration;
 
-import org.pantry.shopping.cases.impl.*;
 import org.pantry.shopping.cases.data.GatewaysFactory;
+import org.pantry.shopping.cases.impl.*;
 import org.pantry.shopping.cases.input.*;
-import org.pantry.shopping.cases.output.FetchToCartResponse;
 
 public class UCConfiguration implements UCFactory {
     private final ViewListUC viewList;

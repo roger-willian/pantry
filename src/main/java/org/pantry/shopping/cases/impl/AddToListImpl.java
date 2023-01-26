@@ -4,7 +4,7 @@ import org.pantry.shopping.cases.data.ShoppingListGateway;
 import org.pantry.shopping.cases.data.GatewaysFactory;
 import org.pantry.shopping.cases.input.AddToListRequest;
 import org.pantry.shopping.cases.input.AddToListUC;
-import org.pantry.shopping.cases.output.AddToShoppingListResponse;
+import org.pantry.shopping.cases.output.AddToListResponse;
 import org.pantry.shopping.entities.ListItem;
 
 public class AddToListImpl implements AddToListUC {
@@ -15,7 +15,7 @@ public class AddToListImpl implements AddToListUC {
     }
 
     @Override
-    public AddToShoppingListResponse execute(AddToListRequest req) {
+    public AddToListResponse execute(AddToListRequest req) {
         ListItem savedItem;
         ListItem info = new ListItem(req.quantity(), req.unit(), req.name());
         if (db.existsSimilar(info))
@@ -23,7 +23,7 @@ public class AddToListImpl implements AddToListUC {
         else
             savedItem = addNewItem(info);
 
-        return new AddToShoppingListResponse(savedItem.quantity(), savedItem.unit(), savedItem.name());
+        return new AddToListResponse(savedItem.quantity(), savedItem.unit(), savedItem.name());
     }
 
     private ListItem addNewItem(ListItem newItem) {

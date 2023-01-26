@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ShoppingListGateway {
-    List<ListItem> allListItems();
+    List<ListItem> findAll();
 
     ListItem addItem(ListItem item);
 

@@ -28,7 +28,7 @@ public class CSVListGateway extends CSVGateway<ListItem> implements ShoppingList
     }
 
     @Override
-    public List<ListItem> allListItems() {
+    public List<ListItem> findAll() {
         loadItems();
         return items;
     }
