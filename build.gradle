@@ -1,0 +1,47 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group 'org.pantry'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+    implementation 'org.apache.commons:commons-csv:1.9.0'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+application {
+    mainClass = 'org.pantry.MainApplication'
+}
+
+jar {
+    manifest {
+        attributes(
+                "Main-Class" : application.mainClass,
+        )
+    }
+    destinationDirectory = file('out/artifacts/Pantry_jar')
+    copy {
+        into jar.destinationDirectory.get()
+        from sourceSets.main.runtimeClasspath.files.findAll {it.path.endsWith(".jar")}
+    }
+}
+
+run {
+    standardInput = System.in
+}
+
+task copyToLib(type: Copy) {
+    into jar.destinationDirectory.get()
+    from dependencies
+}
