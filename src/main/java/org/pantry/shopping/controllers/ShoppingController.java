@@ -31,9 +31,9 @@ public class ShoppingController {
         uc.execute(request);
     }
 
-    public void delFromShoppingList(String unit, String productName) {
+    public void delFromShoppingList(Long id) {
         DelFromListUC uc = cases.getDelFromShoppingList();
-        DelFromListRequest request = new DelFromListRequest(unit, productName);
+        DelFromListRequest request = new DelFromListRequest(id);
         uc.execute(request);
     }
 

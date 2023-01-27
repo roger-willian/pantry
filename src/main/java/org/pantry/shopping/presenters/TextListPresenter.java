@@ -20,10 +20,16 @@ public class TextListPresenter implements ListPresenter {
     }
 
     private ListItemViewModel formatItem(ListItemResponse item) {
+        String id = formatId(item.id());
         String quantity = formatQuantity(item.quantity());
         String unit = formatUnit(item.unit());
         String name = formatName(item.name());
-        return new ListItemViewModel(quantity, unit, name);
+        return new ListItemViewModel(id, quantity, unit, name);
+    }
+
+    private String formatId(Long id) {
+        String number = String.format("%03d", id);
+        return number;
     }
 
     private String formatQuantity(Double quantity) {

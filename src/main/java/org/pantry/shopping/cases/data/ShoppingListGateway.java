@@ -16,5 +16,7 @@ public interface ShoppingListGateway {
 
     Optional<ListItem> findSimilar(ListItem item);
 
-    void removeSimilar(ListItem item);
+    ListItem removeById(Long id);
+
+    Optional<ListItem> findById(Long id);
 }

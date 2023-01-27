@@ -1,6 +1,6 @@
 package org.pantry.shopping.entities;
 
-public record ListItem(Double quantity, String unit, String name) {
+public record ListItem(Long id, Double quantity, String unit, String name) {
     public boolean isValid() {
         if (quantity <= 0) return false;
         else if (unit.trim().isEmpty()) return false;

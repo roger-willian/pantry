@@ -20,36 +20,47 @@ public class FetchToCartImpl implements FetchToCartUC {
 
     @Override
     public FetchToCartResponse execute(FetchToCartRequest request) {
-        CartItem savedItem;
-        CartItem info = new CartItem(request.quantity(), request.unit(), request.name(), request.pricePerUnit(), request.expiration());
-        if (cart.existsSimilar(info))
-            savedItem = incrementItem(info);
-        else
-            savedItem = addItem(info);
+        CartItem toCart = new CartItem(null, request.quantity(), request.unit(), request.name(), request.pricePerUnit(), request.expiration());
+        ListItem fromList = new ListItem(null, toCart.quantity(), toCart.unit(), toCart.name());
+        return fetchAndScratchFromList(toCart, fromList);
+    }
 
-        ListItem fetched = new ListItem(info.quantity(), info.unit(), info.name());
-        if (list.existsSimilar(fetched))
-            scratchFromList(fetched);
-
-        return new FetchToCartResponse(savedItem.quantity(), savedItem.unit(), savedItem.name(), savedItem.pricePerUnit(), savedItem.expiration());
+    private FetchToCartResponse fetchAndScratchFromList(CartItem toCart, ListItem fromList) {
+        try {
+            if (list.existsSimilar(fromList))
+                scratchFromList(fromList);
+            return fetch(toCart);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return FetchToCartResponse.ERROR;
+        }
     }
 
     private void scratchFromList(ListItem fetched) {
-        ListItem oldItem = list.findSimilar(fetched).orElseThrow();
-        Double newQuantity = oldItem.quantity() - fetched.quantity();
-        ListItem remainingItem = new ListItem(newQuantity, oldItem.unit(), oldItem.name());
-        if (newQuantity <= 0.0) list.removeSimilar(fetched);
+        ListItem before = list.findSimilar(fetched).orElseThrow();
+        Double newQuantity = before.quantity() - fetched.quantity();
+        ListItem remainingItem = new ListItem(before.id(), newQuantity, before.unit(), before.name());
+        if (newQuantity <= 0.0) list.removeById(before.id());
         else list.updateItem(remainingItem);
     }
 
-    private CartItem incrementItem(CartItem increment) {
-        CartItem oldItem = cart.findSimilar(increment).orElseThrow();
-        Double newQuantity = oldItem.quantity() + increment.quantity();
-        CartItem newItem = new CartItem(newQuantity, oldItem.unit(), oldItem.name(), oldItem.pricePerUnit(), oldItem.expiration());
-        return cart.updateItem(newItem);
+    private FetchToCartResponse fetch(CartItem toCart) {
+        if (cart.existsSimilar(toCart))
+            return incrementItem(toCart);
+        else
+            return addItem(toCart);
     }
 
-    private CartItem addItem(CartItem newItem) {
-        return cart.addItem(newItem);
+    private FetchToCartResponse incrementItem(CartItem increment) {
+        CartItem alreadyThere = cart.findSimilar(increment).orElseThrow();
+        Double newQuantity = alreadyThere.quantity() + increment.quantity();
+        CartItem newItem = new CartItem(null, newQuantity, alreadyThere.unit(), alreadyThere.name(), alreadyThere.pricePerUnit(), alreadyThere.expiration());
+        cart.updateItem(newItem);
+        return FetchToCartResponse.OK_INCREASED;
+    }
+
+    private FetchToCartResponse addItem(CartItem newItem) {
+        cart.addItem(newItem);
+        return FetchToCartResponse.OK_NEW;
     }
 }

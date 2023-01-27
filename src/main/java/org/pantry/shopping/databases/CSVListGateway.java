@@ -14,17 +14,23 @@ public class CSVListGateway extends CSVGateway<ListItem> implements ShoppingList
         super(fileName);
     }
 
+    private long nextId() {
+        loadItems();
+        return 1 + items.stream().map(ListItem::id).max(Long::compareTo).orElse(0L);
+    }
+
     @Override
     protected ListItem loadItem(CSVRecord record) {
-        Double quantity = Double.parseDouble(record.get(0));
-        String unit = record.get(1);
-        String productName = record.get(2);
-        return new ListItem(quantity, unit, productName);
+        Long id = Long.parseLong(record.get(0));
+        Double quantity = Double.parseDouble(record.get(1));
+        String unit = record.get(2);
+        String productName = record.get(3);
+        return new ListItem(id, quantity, unit, productName);
     }
 
     @Override
     protected Iterable<Object> storeItem(ListItem item) {
-        return Arrays.asList(item.quantity(), item.unit(), item.name());
+        return Arrays.asList(item.id(), item.quantity(), item.unit(), item.name());
     }
 
     @Override
@@ -36,13 +42,15 @@ public class CSVListGateway extends CSVGateway<ListItem> implements ShoppingList
     @Override
     public ListItem addItem(ListItem item) {
         loadItems();
-        if (existsSimilar(item))
-            throw new IllegalArgumentException();
-        else
-            items.add(item);
+
+        if (item.id() != null) throw new IllegalArgumentException("List item id must be null on insert");
+        if (existsSimilar(item)) throw new IllegalArgumentException("List item would be duplicate on insert");
+
+        ListItem newItem = new ListItem(nextId(), item.quantity(), item.unit(), item.name());
+        items.add(newItem);
 
         storeItems();
-        return item;
+        return newItem;
     }
 
     @Override
@@ -54,10 +62,14 @@ public class CSVListGateway extends CSVGateway<ListItem> implements ShoppingList
     @Override
     public ListItem updateItem(ListItem item) {
         loadItems();
-        items.replaceAll(it -> {
-            if (item.isSimilar(it)) return item;
-            else return it;
-        });
+        Optional<ListItem> target = findById(item.id());
+        if (target.isEmpty()) throw new IllegalArgumentException("List item id not found on update");
+
+        Optional<ListItem> duplicate = findSimilar(item).filter(it -> !it.equals(target.get()));
+        if (duplicate.isPresent()) throw new IllegalArgumentException("List item would be duplicate on update");
+
+        items.removeIf(target.get()::equals);
+        items.add(item);
         storeItems();
         return item;
     }
@@ -69,9 +81,19 @@ public class CSVListGateway extends CSVGateway<ListItem> implements ShoppingList
     }
 
     @Override
-    public void removeSimilar(ListItem item) {
+    public ListItem removeById(Long id) {
         loadItems();
-        items.removeIf(item::isSimilar);
+        Optional<ListItem> target = findById(id);
+        if (target.isEmpty())  throw new IllegalArgumentException("List item id not found");
+
+        items.removeIf(target.get()::equals);
         storeItems();
+        return target.get();
+    }
+
+    @Override
+    public Optional<ListItem> findById(Long id) {
+        loadItems();
+        return items.stream().filter(it->it.id() == id).findAny();
     }
 }

@@ -8,32 +8,40 @@ import org.pantry.shopping.cases.output.AddToListResponse;
 import org.pantry.shopping.entities.ListItem;
 
 public class AddToListImpl implements AddToListUC {
-    private final ShoppingListGateway db;
+    private final ShoppingListGateway list;
 
     public AddToListImpl(GatewaysFactory gatewaysFactory) {
-        this.db = gatewaysFactory.getShoppingListGateway();
+        this.list = gatewaysFactory.getShoppingListGateway();
     }
 
     @Override
     public AddToListResponse execute(AddToListRequest req) {
         ListItem savedItem;
-        ListItem info = new ListItem(req.quantity(), req.unit(), req.name());
-        if (db.existsSimilar(info))
-            savedItem = incrementItem(info);
+        ListItem info = new ListItem(null, req.quantity(), req.unit(), req.name());
+        if (list.existsSimilar(info))
+            return increaseInList(info);
         else
-            savedItem = addNewItem(info);
-
-        return new AddToListResponse(savedItem.quantity(), savedItem.unit(), savedItem.name());
+            return insertIntoList(info);
     }
 
-    private ListItem addNewItem(ListItem newItem) {
-        return db.addItem(newItem);
+    private AddToListResponse insertIntoList(ListItem newItem) {
+        try {
+            list.addItem(newItem);
+            return AddToListResponse.OK_NEW;
+        } catch (Exception e) {
+            return AddToListResponse.ERROR;
+        }
     }
 
-    private ListItem incrementItem(ListItem increment) {
-        ListItem oldItem = db.findSimilar(increment).orElseThrow();
-        Double newQuantity = increment.quantity() + oldItem.quantity();
-        ListItem newItem = new ListItem(newQuantity, oldItem.unit(), oldItem.name());
-        return db.updateItem(newItem);
+    private AddToListResponse increaseInList(ListItem increment) {
+        try {
+            ListItem alreadyThere = list.findSimilar(increment).orElseThrow();
+            Double newQuantity = increment.quantity() + alreadyThere.quantity();
+            ListItem increased = new ListItem(alreadyThere.id(), newQuantity, alreadyThere.unit(), alreadyThere.name());
+            list.updateItem(increased);
+            return AddToListResponse.OK_INCREASED;
+        } catch (Exception e) {
+            return AddToListResponse.ERROR;
+        }
     }
 }

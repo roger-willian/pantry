@@ -19,7 +19,7 @@ public class ViewListImpl implements ViewListUC {
         List<ListItem> items = db.findAll();
         return items
                 .stream()
-                .map(it -> new ListItemResponse(it.quantity(), it.unit(), it.name()))
+                .map(it -> new ListItemResponse(it.id(), it.quantity(), it.unit(), it.name()))
                 .toList();
     }
 }

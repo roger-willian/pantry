@@ -21,39 +21,51 @@ public class ReturnFromCartImpl implements ReturnFromCartUC {
 
     @Override
     public ReturnFromCartResponse execute(ReturnFromCartRequest request) {
-        ListItem savedItem;
-        ListItem info = new ListItem(request.quantity(), request.unit(), request.name());
-        if (list.existsSimilar(info))
-            savedItem = increaseInList(info);
-        else
-            savedItem = insertIntoList(info);
-
-        CartItem returned = new CartItem(request.quantity(), request.unit(), request.name(), request.pricePerUnit(), request.expiration());
-        removeFromCart(returned);
-        return new ReturnFromCartResponse();
+        ListItem toList = new ListItem(null, request.quantity(), request.unit(), request.name());
+        CartItem fromCart = new CartItem(null, request.quantity(), request.unit(), request.name(), request.pricePerUnit(), request.expiration());
+        return leaveAndAddToList(fromCart, toList);
     }
 
-    private void removeFromCart(CartItem returned) {
-        CartItem before = cart.findSimilar(returned).orElseThrow();
-        Double remaining = before.quantity() - returned.quantity();
-        if (remaining > 0.0){
-            CartItem remainingItems = new CartItem(remaining, before.unit(), before.name(), before.pricePerUnit(), before.expiration());
-            cart.updateItem(remainingItems);
-        } else if (remaining == 0.0) {
-            cart.removeSimilar(before);
-        } else {
-            throw new IllegalArgumentException();
+    ReturnFromCartResponse leaveAndAddToList(CartItem fromCart, ListItem toList) {
+        try {
+            addToList(toList);
+            return leave(fromCart);
+        } catch (Exception e) {
+            return ReturnFromCartResponse.ERROR;
         }
     }
 
-    private ListItem insertIntoList(ListItem newItem) {
-        return list.addItem(newItem);
+    private void addToList(ListItem toList) {
+        if (list.existsSimilar(toList))
+            increaseInList(toList);
+        else
+            insertIntoList(toList);
     }
 
-    private ListItem increaseInList(ListItem returning) {
+    private void insertIntoList(ListItem newItem) {
+        list.addItem(newItem);
+    }
+
+    private void increaseInList(ListItem returning) {
         ListItem alreadyThere = list.findSimilar(returning).orElseThrow();
-        Double newQuantity = alreadyThere.quantity() + returning.quantity();
-        ListItem increased = new ListItem(newQuantity, alreadyThere.unit(), alreadyThere.name());
-        return list.updateItem(increased);
+        Double newQuantity = returning.quantity() + alreadyThere.quantity();
+        ListItem increased = new ListItem(alreadyThere.id(), newQuantity, alreadyThere.unit(), alreadyThere.name());
+        list.updateItem(increased);
+    }
+
+    private ReturnFromCartResponse leave(CartItem returned) {
+        CartItem before = cart.findSimilar(returned).orElseThrow();
+        Double remaining = before.quantity() - returned.quantity();
+
+        if (remaining < 0){
+            return ReturnFromCartResponse.TOO_MANY;
+        } else if (remaining == 0) {
+            cart.removeById(before.id());
+            return ReturnFromCartResponse.OK_ALL;
+        } else {
+            CartItem remainingItem = new CartItem(before.id(), remaining, before.unit(), before.name(), before.pricePerUnit(), before.expiration());
+            cart.updateItem(remainingItem);
+            return ReturnFromCartResponse.OK_SOME;
+        }
     }
 }

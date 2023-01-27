@@ -16,5 +16,7 @@ public interface ShoppingCartGateway {
 
     CartItem updateItem(CartItem item);
 
-    void removeSimilar(CartItem item);
+    Optional<CartItem> findById(Long id);
+
+    CartItem removeById(Long id);
 }

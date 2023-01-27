@@ -22,15 +22,20 @@ public class TextCartPresenter implements CartPresenter {
     }
 
     private CartItemViewModel formatItem(CartItemResponse item) {
+        String id = formatId(item.id());
         String name = formatName(item.name());
         String quantity = formatQuantity(item.quantity());
         String unit = formatUnit(item.unit());
         String pricePerUnit = formatPrice(Double.valueOf(item.pricePerUnit()));
         String subtotal = formatPrice(item.quantity() * item.pricePerUnit());
         String expiration = formatExpiration(item.expiration());
-        return new CartItemViewModel(name, quantity, unit, pricePerUnit, subtotal, expiration);
+        return new CartItemViewModel(id, name, quantity, unit, pricePerUnit, subtotal, expiration);
     }
 
+    private String formatId(Long id) {
+        String number = String.format("%03d", id);
+        return number;
+    }
 
     private String formatQuantity(Double quantity) {
         String number = String.format("%7.3f", quantity);

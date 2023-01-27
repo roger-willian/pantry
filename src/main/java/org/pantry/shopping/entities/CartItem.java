@@ -1,6 +1,6 @@
 package org.pantry.shopping.entities;
 
-public record CartItem(Double quantity, String unit, String name, Integer pricePerUnit, Integer expiration) {
+public record CartItem(Long id, Double quantity, String unit, String name, Integer pricePerUnit, Integer expiration) {
 
     public boolean isSimilar(CartItem other) {
         if (other == null) return false;

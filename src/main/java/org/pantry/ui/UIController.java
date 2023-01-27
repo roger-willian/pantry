@@ -16,7 +16,7 @@ public class UIController {
         this.controller = controller;
     }
     public void start() {
-        Menu mainMenu = new Menu("Shopping List");
+        Menu mainMenu = new Menu("Shopping List menu");
         mainMenu.addItem("add item", this::addToShoppingList);
         mainMenu.addItem("del item", this::delFromShoppingList);
         mainMenu.addItem("fetch to cart", this::fetchToShoppingCart);
@@ -34,9 +34,8 @@ public class UIController {
     }
 
     private void delFromShoppingList() {
-        String name = Prompt.ask("Which product?");
-        String un = Prompt.ask("Which unit?");
-        controller.delFromShoppingList(un, name);
+        Long id = Prompt.ask("Which product (id)?", Long::parseLong, r -> r > 0L);
+        controller.delFromShoppingList(id);
     }
 
     private void viewShoppingList() {
@@ -44,7 +43,7 @@ public class UIController {
     }
 
     private void accessShoppingCart() {
-        Menu cartMenu = new Menu("Shopping Cart");
+        Menu cartMenu = new Menu("Shopping Cart menu");
         cartMenu.addItem("return item to list", this::returnFromShoppingCart);
         cartMenu.setBackOption("back to list");
         cartMenu.setBeforeAction(this::viewShoppingCart);
