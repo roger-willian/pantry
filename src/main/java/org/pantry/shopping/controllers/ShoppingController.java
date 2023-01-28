@@ -2,6 +2,7 @@ package org.pantry.shopping.controllers;
 
 import org.pantry.shopping.cases.input.*;
 import org.pantry.shopping.cases.output.CartItemResponse;
+import org.pantry.shopping.cases.output.FetchFromListResponse;
 import org.pantry.shopping.cases.output.ListItemResponse;
 
 import java.util.List;
@@ -53,6 +54,12 @@ public class ShoppingController {
     public void returnFromShoppingCart(Double quantity, String unit, String name, Integer pricePerUnit, Integer expiration) {
         ReturnFromCartUC uc = cases.getReturnFromCartUC();
         ReturnFromCartRequest request = new ReturnFromCartRequest(quantity, unit, name, pricePerUnit, expiration);
+        uc.execute(request);
+    }
+
+    public void fetchFromShoppingList(Long id, Double quantity, Integer pricePerUnit, Integer expiration) {
+        FetchFromListUC uc = cases.getFetchFromListUC();
+        FetchFromListRequest request = new FetchFromListRequest(id, quantity, pricePerUnit, expiration);
         uc.execute(request);
     }
 }

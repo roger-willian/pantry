@@ -19,22 +19,32 @@ public class UIController {
         Menu mainMenu = new Menu("Shopping List menu");
         mainMenu.addItem("add item", this::addToShoppingList);
         mainMenu.addItem("del item", this::delFromShoppingList);
-        mainMenu.addItem("fetch to cart", this::fetchToShoppingCart);
+        mainMenu.addItem("fetch to cart (directly)", this::fetchToShoppingCart);
+        mainMenu.addItem("fetch to cart (from list)", this::fetchFromList);
         mainMenu.addItem("shopping cart", this::accessShoppingCart);
         mainMenu.setBackOption("quit");
         mainMenu.setBeforeAction(this::viewShoppingList);
         mainMenu.select();
     }
 
+    private void fetchFromList() {
+        Long id = Prompt.ask("Which product (id)?", Long::parseLong, this::isPositive);
+        Double qty = Prompt.ask("How much/many?", Double::parseDouble, this::isPositive);
+        Double pricePerUnit = Prompt.ask("How much it costs?", Double::parseDouble, this::isPositive);
+        Date expirationDate = Prompt.ask("Expires when (dd/mm/yyyy)?", this::parseDate, this::isValidDate);
+        Integer expiration = Integer.parseInt(new SimpleDateFormat("yyyyMMdd").format(expirationDate));
+        controller.fetchFromShoppingList(id, qty, (int) (pricePerUnit*100), expiration);
+    }
+
     private void addToShoppingList() {
-        Double qty = Prompt.ask("How much/many?", Double::parseDouble);
-        String un = Prompt.ask("Which unit?");
-        String name = Prompt.ask("Which product?");
+        Double qty = Prompt.ask("How much/many?", Double::parseDouble, this::isPositive);
+        String un = Prompt.ask("Which unit?", this::identity, this::isNotEmpty);
+        String name = Prompt.ask("Which product?", this::identity, this::isNotEmpty);
         controller.addToShoppingList(qty, un, name);
     }
 
     private void delFromShoppingList() {
-        Long id = Prompt.ask("Which product (id)?", Long::parseLong, r -> r > 0L);
+        Long id = Prompt.ask("Which product (id)?", Long::parseLong, this::isPositive);
         controller.delFromShoppingList(id);
     }
 
@@ -55,9 +65,9 @@ public class UIController {
     }
 
     private void fetchToShoppingCart() {
-        String name = Prompt.ask("Which product?");
-        String unit = Prompt.ask("Which unit?");
-        Double quantity = Prompt.ask("How much/many?", Double::parseDouble);
+        String name = Prompt.ask("Which product?", this::identity, this::isNotEmpty);
+        String unit = Prompt.ask("Which unit?", this::identity, this::isNotEmpty);
+        Double quantity = Prompt.ask("How much/many?", Double::parseDouble, this::isPositive);
         Double pricePerUnit = Prompt.ask("How much it costs?", Double::parseDouble, this::isPositive);
         Date expirationDate = Prompt.ask("Expires when (dd/mm/yyyy)?", this::parseDate, this::isValidDate);
         Integer expiration = Integer.parseInt(new SimpleDateFormat("yyyyMMdd").format(expirationDate));
@@ -65,17 +75,27 @@ public class UIController {
     }
 
     private void returnFromShoppingCart() {
-        String name = Prompt.ask("Which product?");
-        String unit = Prompt.ask("Which unit?");
-        Double quantity = Prompt.ask("How much/many?", Double::parseDouble);
+        String name = Prompt.ask("Which product?", this::identity, this::isNotEmpty);
+        String unit = Prompt.ask("Which unit?", this::identity, this::isNotEmpty);
+        Double quantity = Prompt.ask("How much/many?", Double::parseDouble, this::isPositive);
         Double pricePerUnit = Prompt.ask("How much it costs?", Double::parseDouble, this::isPositive);
         Date expirationDate = Prompt.ask("Expires when (dd/mm/yyyy)?", this::parseDate, this::isValidDate);
         Integer expiration = Integer.parseInt(new SimpleDateFormat("yyyyMMdd").format(expirationDate));
         controller.returnFromShoppingCart(quantity, unit, name, (int) (pricePerUnit*100), expiration);
     }
 
+    private String identity(String response) {
+        return response;
+    }
     private boolean isPositive(Double value) {
-        return value > 0.0;
+        return value > 0D;
+    }
+    private boolean isPositive(Long value) {
+        return value > 0L;
+    }
+
+    private boolean isNotEmpty(String response) {
+        return !response.trim().isEmpty();
     }
 
     private boolean isValidDate(Date value) {

@@ -10,7 +10,8 @@ public class UCConfiguration implements UCFactory {
     private final DelFromListUC delFromShoppingList;
     private final ViewCartUC viewCart;
     private final FetchToCartUC fetchToCart;
-    private final ReturnFromCartUC returnFromCartUC;
+    private final ReturnFromCartUC returnFromCart;
+    private final  FetchFromListUC fetchFromList;
 
     public UCConfiguration(GatewaysFactory databaseConfig) {
         viewList = new ViewListImpl(databaseConfig);
@@ -18,7 +19,8 @@ public class UCConfiguration implements UCFactory {
         delFromShoppingList = new DelFromListImpl(databaseConfig);
         viewCart = new ViewCartImpl(databaseConfig);
         fetchToCart = new FetchToCartImpl(databaseConfig);
-        returnFromCartUC = new ReturnFromCartImpl(databaseConfig);
+        returnFromCart = new ReturnFromCartImpl(databaseConfig);
+        fetchFromList = new FetchFromListImpl(databaseConfig);
     }
     @Override
     public ViewListUC getViewListUC() {
@@ -47,6 +49,11 @@ public class UCConfiguration implements UCFactory {
 
     @Override
     public ReturnFromCartUC getReturnFromCartUC() {
-        return returnFromCartUC;
+        return returnFromCart;
+    }
+
+    @Override
+    public FetchFromListUC getFetchFromListUC() {
+        return fetchFromList;
     }
 }

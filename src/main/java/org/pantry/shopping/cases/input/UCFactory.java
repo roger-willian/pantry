@@ -12,4 +12,6 @@ public interface UCFactory {
     FetchToCartUC getFetchToCartUC();
 
     ReturnFromCartUC getReturnFromCartUC();
+
+    FetchFromListUC getFetchFromListUC();
 }
