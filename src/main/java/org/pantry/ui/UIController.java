@@ -75,13 +75,9 @@ public class UIController {
     }
 
     private void returnFromShoppingCart() {
-        String name = Prompt.ask("Which product?", this::identity, this::isNotEmpty);
-        String unit = Prompt.ask("Which unit?", this::identity, this::isNotEmpty);
-        Double quantity = Prompt.ask("How much/many?", Double::parseDouble, this::isPositive);
-        Double pricePerUnit = Prompt.ask("How much it costs?", Double::parseDouble, this::isPositive);
-        Date expirationDate = Prompt.ask("Expires when (dd/mm/yyyy)?", this::parseDate, this::isValidDate);
-        Integer expiration = Integer.parseInt(new SimpleDateFormat("yyyyMMdd").format(expirationDate));
-        controller.returnFromShoppingCart(quantity, unit, name, (int) (pricePerUnit*100), expiration);
+        Long id = Prompt.ask("Which product (id)?", Long::parseLong, this::isPositive);
+        Double qty = Prompt.ask("How much/many?", Double::parseDouble, this::isPositive);
+        controller.returnFromShoppingCart(id, qty);
     }
 
     private String identity(String response) {

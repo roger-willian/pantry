@@ -9,6 +9,8 @@ import org.pantry.shopping.cases.output.ReturnFromCartResponse;
 import org.pantry.shopping.entities.CartItem;
 import org.pantry.shopping.entities.ListItem;
 
+import java.util.Optional;
+
 public class ReturnFromCartImpl implements ReturnFromCartUC {
 
     private final ShoppingCartGateway cart;
@@ -21,8 +23,11 @@ public class ReturnFromCartImpl implements ReturnFromCartUC {
 
     @Override
     public ReturnFromCartResponse execute(ReturnFromCartRequest request) {
-        ListItem toList = new ListItem(null, request.quantity(), request.unit(), request.name());
-        CartItem fromCart = new CartItem(null, request.quantity(), request.unit(), request.name(), request.pricePerUnit(), request.expiration());
+        Optional<CartItem> inCart = cart.findById(request.id());
+        if (inCart.isEmpty()) return  ReturnFromCartResponse.NOT_FOUND;
+
+        CartItem fromCart = new CartItem(null, request.quantity(), inCart.get().unit(), inCart.get().name(), inCart.get().pricePerUnit(), inCart.get().expiration());
+        ListItem toList = new ListItem(null, request.quantity(), fromCart.unit(), fromCart.name());
         return leaveAndAddToList(fromCart, toList);
     }
 
