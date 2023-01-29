@@ -75,7 +75,7 @@ public class CSVCartGateway extends CSVGateway<CartItem> implements ShoppingCart
         if (duplicate.isPresent()) throw new IllegalArgumentException("Cart item would be duplicate on update");
 
         items.removeIf(target.get()::equals);
-        items.add(target.get());
+        items.add(item);
         storeItems();
         return item;
     }
