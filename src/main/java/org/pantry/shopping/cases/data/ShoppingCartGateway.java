@@ -12,7 +12,7 @@ public interface ShoppingCartGateway {
 
     boolean existsSimilar(CartItem item);
 
-    Optional<CartItem> findSimilar(CartItem increment);
+    Optional<CartItem> findSimilar(CartItem item);
 
     CartItem updateItem(CartItem item);
 

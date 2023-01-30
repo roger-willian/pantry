@@ -16,7 +16,6 @@ public class AddToListImpl implements AddToListUC {
 
     @Override
     public AddToListResponse execute(AddToListRequest req) {
-        ListItem savedItem;
         ListItem info = new ListItem(null, req.quantity(), req.unit(), req.name());
         if (list.existsSimilar(info))
             return increaseInList(info);
@@ -26,7 +25,8 @@ public class AddToListImpl implements AddToListUC {
 
     private AddToListResponse insertIntoList(ListItem newItem) {
         try {
-            list.addItem(newItem);
+            if (!newItem.isValid()) return AddToListResponse.INVALID;
+            else list.addItem(newItem);
             return AddToListResponse.OK_NEW;
         } catch (Exception e) {
             return AddToListResponse.ERROR;
