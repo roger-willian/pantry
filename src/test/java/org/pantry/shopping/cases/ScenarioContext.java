@@ -1,8 +1,18 @@
 package org.pantry.shopping.cases;
 
+import io.cucumber.datatable.DataTableType;
+import io.cucumber.datatable.DataTableTypeRegistry;
+import io.cucumber.datatable.TableEntryTransformer;
+import io.cucumber.datatable.TableRowTransformer;
 import org.pantry.shopping.cases.data.GatewaysFactory;
-import org.pantry.shopping.cases.data.ShoppingCartGateway;
-import org.pantry.shopping.cases.data.ShoppingListGateway;
+import org.pantry.shopping.cases.output.AddToListResponse;
+import org.pantry.shopping.cases.output.DelFromListResponse;
+import org.pantry.shopping.cases.output.ListItemResponse;
+import org.pantry.shopping.entities.ListItem;
+
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -11,6 +21,10 @@ public class ScenarioContext {
     private final GatewaysFactory databases;
     private final VolatileCartGateway cart;
     private final VolatileListGateway list;
+
+    AddToListResponse lastAddToListResponse;
+    DelFromListResponse lastDelFromListResponse;
+    List<ListItemResponse> lastViewListResponse;
 
     public ScenarioContext() {
         this.databases = mock(GatewaysFactory.class);
