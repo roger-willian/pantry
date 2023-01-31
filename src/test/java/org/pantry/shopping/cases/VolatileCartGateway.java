@@ -66,4 +66,8 @@ public class VolatileCartGateway implements ShoppingCartGateway {
         items.remove(target);
         return target;
     }
+
+    public void addWithId(CartItem item) {
+        items.add(item);
+    }
 }

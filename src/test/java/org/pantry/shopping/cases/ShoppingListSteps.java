@@ -50,10 +50,8 @@ public class ShoppingListSteps {
     }
 
     @Given("I have the following items in my shopping list:")
-    public void theFollowingItemsAreInTheShoppingList(List<ListItemResponse> items) {
-        items.forEach(it-> {
-            list.addItemWithId(new ListItem(it.id(), it.quantity(), it.unit(), it.name()));
-        });
+    public void theFollowingItemsAreInTheShoppingList(List<ListItem> items) {
+        items.forEach(list::addItemWithId);
     }
 
     @When("I add {double} {string} of {string} to my shopping list")
