@@ -66,4 +66,8 @@ public class VolatileListGateway implements ShoppingListGateway {
     public Optional<ListItem> findById(Long id) {
         return items.stream().filter(it->it.id() == id).findAny();
     }
+
+    public void addItemWithId(ListItem item) {
+        items.add(item);
+    }
 }

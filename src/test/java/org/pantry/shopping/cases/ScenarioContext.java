@@ -9,16 +9,25 @@ import static org.mockito.Mockito.when;
 
 public class ScenarioContext {
     private final GatewaysFactory databases;
+    private final VolatileCartGateway cart;
+    private final VolatileListGateway list;
 
     public ScenarioContext() {
         this.databases = mock(GatewaysFactory.class);
-        ShoppingListGateway list = new VolatileListGateway();
-        ShoppingCartGateway cart = new VolatileCartGateway();
+        list = new VolatileListGateway();
+        cart = new VolatileCartGateway();
         when(databases.getShoppingListGateway()).thenReturn(list);
         when(databases.getShoppingCartGateway()).thenReturn(cart);
     }
 
     public GatewaysFactory getDatabases() {
         return databases;
+    }
+
+    public VolatileListGateway getList() {
+        return list;
+    }
+    public VolatileCartGateway getCart() {
+        return cart;
     }
 }
