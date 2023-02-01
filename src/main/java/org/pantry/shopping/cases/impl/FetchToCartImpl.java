@@ -62,7 +62,7 @@ public class FetchToCartImpl implements FetchToCartUC {
     protected FetchToCartResponse incrementItem(CartItem increment) {
         CartItem alreadyThere = cart.findSimilar(increment).orElseThrow();
         Double newQuantity = alreadyThere.quantity() + increment.quantity();
-        CartItem newItem = new CartItem(null, newQuantity, alreadyThere.unit(), alreadyThere.name(), alreadyThere.pricePerUnit(), alreadyThere.expiration());
+        CartItem newItem = new CartItem(alreadyThere.id(), newQuantity, alreadyThere.unit(), alreadyThere.name(), alreadyThere.pricePerUnit(), alreadyThere.expiration());
         cart.updateItem(newItem);
         return FetchToCartResponse.OK_INCREASED;
     }
