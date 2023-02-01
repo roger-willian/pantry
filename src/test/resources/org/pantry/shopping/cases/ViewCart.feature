@@ -43,3 +43,12 @@
         | 5   | 1.5 | l     | milk    | 3.29  | 08/04/2023  |
         | 2   | 3   | cans  | beans   | 5.36  | 15/12/2023  |
       And I should see 2 "un" of "watermelon" in my shopping cart, costing $ 22.00 per unit and expiring on "23/12/2023"
+
+    @Interface
+    Scenario: Stop viewing a product that has just been returned from the shopping cart to the shopping list
+      Given I return 10 units of the item with id 1 from the shopping cart to the shopping list
+      And I look at my shopping cart
+      Then I should see exactly 2 items in my shopping cart, including:
+        | id  | qty | unit  | product | price | expiration  |
+        | 5   | 1.5 | l     | milk    | 3.29  | 08/04/2023  |
+        | 2   | 3   | cans  | beans   | 5.36  | 15/12/2023  |

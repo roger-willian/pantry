@@ -21,6 +21,8 @@ public class ScenarioContext {
     FetchToCartResponse lastFetchToCartResponse;
     FetchFromListResponse lastFetchFromListResponse;
 
+    ReturnFromCartResponse lastReturnFromCartResponse;
+
 
     public ScenarioContext() {
         this.databases = mock(GatewaysFactory.class);

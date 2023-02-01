@@ -8,6 +8,7 @@ import io.cucumber.java.en.When;
 import org.junit.jupiter.api.Assertions;
 import org.pantry.shopping.cases.impl.FetchFromListImpl;
 import org.pantry.shopping.cases.impl.FetchToCartImpl;
+import org.pantry.shopping.cases.impl.ReturnFromCartImpl;
 import org.pantry.shopping.cases.impl.ViewCartImpl;
 import org.pantry.shopping.cases.input.*;
 import org.pantry.shopping.cases.output.CartItemResponse;
@@ -27,12 +28,15 @@ public class ShoppingCartSteps {
     private final FetchToCartUC fetchToCart;
     private final FetchFromListUC fetchFromList;
 
+    private final ReturnFromCartUC returnFromCart;
+
     public ShoppingCartSteps(ScenarioContext context) {
         this.context = context;
         cart = context.getCart();
         viewCart = new ViewCartImpl(context.getDatabases());
         fetchToCart = new FetchToCartImpl(context.getDatabases());
         fetchFromList = new FetchFromListImpl(context.getDatabases());
+        returnFromCart = new ReturnFromCartImpl(context.getDatabases());
     }
 
     private Integer fromDate(String uiDate) {
@@ -124,5 +128,11 @@ public class ShoppingCartSteps {
         Integer expiration = fromDate(date);
         FetchFromListRequest request = new FetchFromListRequest(id, qty, pricePerUnit, expiration);
         context.lastFetchFromListResponse = fetchFromList.execute(request);
+    }
+
+    @Given("I return {double} units of the item with id {long} from the shopping cart to the shopping list")
+    public void iReturnUnitsOfTheItemWithIdFromTheShoppingCartToTheShoppingList(Double qty, Long id) {
+        ReturnFromCartRequest request = new ReturnFromCartRequest(id, qty);
+        context.lastReturnFromCartResponse = returnFromCart.execute(request);
     }
 }
