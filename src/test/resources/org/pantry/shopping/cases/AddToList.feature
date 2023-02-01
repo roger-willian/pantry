@@ -1,4 +1,4 @@
-@Shopping @ShoppingList
+@Shopping @ShoppingList @Interface @Database
 Feature: Add items to the shopping list
 
   Background: There are some items in my shopping list
@@ -8,7 +8,6 @@ Feature: Add items to the shopping list
       | 5   | 1.5 | l     | milk    |
       | 2   | 3   | cans  | beans   |
 
-    @Interface @Database
     Scenario: add a new item to the shopping list
       When I add 1 "un" of "watermelon" to my shopping list
       Then the last Add to List response should be "OK_NEW"
@@ -19,7 +18,6 @@ Feature: Add items to the shopping list
         | 2   | 3   | cans  | beans       |
       And my shopping list should have 1 "un" of "watermelon"
 
-    @Interface @Database
     Scenario: add a repeated item to the shopping list
       When I add 0.5 "l" of "milk" to my shopping list
       Then the last Add to List response should be "OK_INCREASED"
@@ -29,7 +27,6 @@ Feature: Add items to the shopping list
         | 2   | 3   | cans  | beans   |
       And my shopping list should have 2 "l" of "milk"
 
-    @Interface @Database
     Scenario Outline: try to add invalid products to the shopping list
 
       Valid items are those whose quantity is greater than zero, and whose unit and name are non-empty after trimmed.

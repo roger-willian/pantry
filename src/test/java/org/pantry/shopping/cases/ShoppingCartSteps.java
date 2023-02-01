@@ -12,13 +12,11 @@ import org.pantry.shopping.cases.impl.ReturnFromCartImpl;
 import org.pantry.shopping.cases.impl.ViewCartImpl;
 import org.pantry.shopping.cases.input.*;
 import org.pantry.shopping.cases.output.CartItemResponse;
+import org.pantry.shopping.cases.output.FetchFromListResponse;
 import org.pantry.shopping.entities.CartItem;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class ShoppingCartSteps {
     private final VolatileCartGateway cart;
@@ -40,15 +38,22 @@ public class ShoppingCartSteps {
     }
 
     private Integer fromDate(String uiDate) {
+        String dbDate;
         try {
             SimpleDateFormat uiFormat = new SimpleDateFormat("dd/MM/yyyy");
-            SimpleDateFormat dbFormat = new SimpleDateFormat("yyyyMMdd");
+            uiFormat.setLenient(false);
             Date date = uiFormat.parse(uiDate);
-            Integer dbDate = Integer.parseInt(dbFormat.format(date));
-            return dbDate;
+            dbDate = CartItem.dateFormat.format(date);
         } catch (Exception e) {
-            return 0;
+            dbDate = uiDate.substring(6) + uiDate.substring(3,5) + uiDate.substring(0,2);
         }
+        Integer expiration = Integer.parseInt(dbDate);
+        return expiration;
+    }
+
+    private Integer fromPrice(Double uiPrice) {
+        Integer pricePerUnit = (int) (uiPrice * 100);
+        return pricePerUnit;
     }
 
     @DataTableType
@@ -59,10 +64,7 @@ public class ShoppingCartSteps {
         String product = entry.get("product");
         Integer price = (int) (Double.parseDouble(entry.get("price")) * 100);
         String date = entry.get("expiration");
-        String year = date.substring(6);
-        String month = date.substring(3, 4);
-        String day = date.substring(0, 1);
-        Integer expiration = Integer.parseInt(year + month + day);
+        Integer expiration = fromDate(date);
         return new CartItemResponse(id, qty, unit, product, price, expiration);
     }
 
@@ -74,10 +76,7 @@ public class ShoppingCartSteps {
         String product = entry.get("product");
         Integer price = (int) (Double.parseDouble(entry.get("price")) * 100);
         String date = entry.get("expiration");
-        String year = date.substring(6);
-        String month = date.substring(3, 4);
-        String day = date.substring(0, 1);
-        Integer expiration = Integer.parseInt(year + month + day);
+        Integer expiration = fromDate(date);
         return new CartItem(id, qty, unit, product, price, expiration);
     }
 
@@ -86,10 +85,32 @@ public class ShoppingCartSteps {
         items.forEach(cart::addWithId);
     }
 
+    @When("I return {double} units of the item with id {long} from the shopping cart to the shopping list")
+    public void iReturnUnitsOfTheItemWithIdFromTheShoppingCartToTheShoppingList(Double qty, Long id) {
+        ReturnFromCartRequest request = new ReturnFromCartRequest(id, qty);
+        context.lastReturnFromCartResponse = returnFromCart.execute(request);
+    }
+
     @When("I look at my shopping cart")
     public void iLookAtMyShoppingCart() {
         ViewCartRequest request = new ViewCartRequest();
         context.lastViewCartResponse = viewCart.execute(request);
+    }
+
+    @When("I fetch {double} {string} of {string} to my shopping cart, costing $ {double} per unit and expiring on {string}")
+    public void iFetchOfToMyShoppingCartCostingPerUnitAndExpiringOn(Double qty, String unit, String product, Double price, String date) {
+        Integer pricePerUnit = fromPrice(price);
+        Integer expiration = fromDate(date);
+        FetchToCartRequest request = new FetchToCartRequest(qty, unit, product, pricePerUnit, expiration);
+        context.lastFetchToCartResponse = fetchToCart.execute(request);
+    }
+
+    @When("I fetch {double} units of the item with id {long} to my shopping cart, costing $ {double} per unit and expiring on {string}")
+    public void iFetchUnitsOfTheItemWithIdToMyShoppingCartCosting$PerUnitAndExpiringOn(Double qty, Long id, Double price, String date) {
+        Integer pricePerUnit = fromPrice(price);
+        Integer expiration = fromDate(date);
+        FetchFromListRequest request = new FetchFromListRequest(id, qty, pricePerUnit, expiration);
+        context.lastFetchFromListResponse = fetchFromList.execute(request);
     }
 
     @Then("I should see exactly {int} items in my shopping cart, including:")
@@ -98,17 +119,9 @@ public class ShoppingCartSteps {
         Assertions.assertTrue(context.lastViewCartResponse.containsAll(items));
     }
 
-    @When("I fetch {double} {string} of {string} to my shopping cart, costing $ {double} per unit and expiring on {string}")
-    public void iFetchOfToMyShoppingCartCostingPerUnitAndExpiringOn(Double qty, String unit, String product, Double price, String date) {
-        Integer pricePerUnit = (int) (price * 100);
-        Integer expiration = fromDate(date);
-        FetchToCartRequest request = new FetchToCartRequest(qty, unit, product, pricePerUnit, expiration);
-        context.lastFetchToCartResponse = fetchToCart.execute(request);
-    }
-
-    @And("I should see {double} {string} of {string} in my shopping cart, costing $ {double} per unit and expiring on {string}")
+    @Then("I should see {double} {string} of {string} in my shopping cart, costing $ {double} per unit and expiring on {string}")
     public void iShouldSeeOfInMyShoppingCartCostingPerUnitAndExpiringOn(Double qty, String unit, String product, Double price, String date) {
-        Integer pricePerUnit = (int) (price * 100);
+        Integer pricePerUnit = fromPrice(price);
         Integer expiration = fromDate(date);
         boolean found = context.lastViewCartResponse.stream().anyMatch(it -> {
            if (!Objects.equals(it.quantity(), qty)) return false;
@@ -122,17 +135,36 @@ public class ShoppingCartSteps {
         Assertions.assertTrue(found);
     }
 
-    @When("I fetch {double} units of the item with id {long} to my shopping cart, costing $ {double} per unit and expiring on {string}")
-    public void iFetchUnitsOfTheItemWithIdToMyShoppingCartCosting$PerUnitAndExpiringOn(Double qty, Long id, Double price, String date) {
-        Integer pricePerUnit = (int) (price * 100);
-        Integer expiration = fromDate(date);
-        FetchFromListRequest request = new FetchFromListRequest(id, qty, pricePerUnit, expiration);
-        context.lastFetchFromListResponse = fetchFromList.execute(request);
+    @Then("the last Fetch from List response should be {string}")
+    public void theLastFetchFromListResponseShouldBe(String response) {
+        Map<String, FetchFromListResponse> expected = new HashMap<>();
+        expected.put("OK_ALL", FetchFromListResponse.OK_ALL);
+        expected.put("OK_SOME", FetchFromListResponse.OK_SOME);
+        expected.put("NOT_FOUND", FetchFromListResponse.NOT_FOUND);
+        expected.put("ERROR", FetchFromListResponse.ERROR);
+        expected.put("INVALID", FetchFromListResponse.INVALID);
+        Assertions.assertEquals(expected.get(response), context.lastFetchFromListResponse);
     }
 
-    @Given("I return {double} units of the item with id {long} from the shopping cart to the shopping list")
-    public void iReturnUnitsOfTheItemWithIdFromTheShoppingCartToTheShoppingList(Double qty, Long id) {
-        ReturnFromCartRequest request = new ReturnFromCartRequest(id, qty);
-        context.lastReturnFromCartResponse = returnFromCart.execute(request);
+    @Then("my shopping cart should have exactly {int} items, including:")
+    public void myShoppingCartShouldHaveExactlyItemsIncluding(Integer size, List<CartItem> items) {
+        Assertions.assertEquals(size, cart.findAll().size());
+        Assertions.assertTrue(cart.findAll().containsAll(items));
+    }
+
+    @Then("my shopping cart should have {double} {string} of {string}, costing $ {double} per unit and expiring on {string}")
+    public void myShoppingCartShouldHaveOfCosting$PerUnitAndExpiringOn(Double qty, String unit, String product, Double price, String date) {
+        Integer pricePerUnit = fromPrice(price);
+        Integer expiration = fromDate(date);
+        boolean found = cart.findAll().stream().anyMatch(it -> {
+            if (!Objects.equals(it.quantity(), qty)) return false;
+            if (!Objects.equals(it.unit(), unit)) return false;
+            if (!Objects.equals(it.name(), product)) return false;
+            if (!Objects.equals(it.pricePerUnit(), pricePerUnit)) return false;
+            if (!Objects.equals(it.expiration(), expiration)) return false;
+
+            return true;
+        });
+        Assertions.assertTrue(found);
     }
 }
