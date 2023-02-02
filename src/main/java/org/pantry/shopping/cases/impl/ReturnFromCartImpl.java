@@ -33,8 +33,10 @@ public class ReturnFromCartImpl implements ReturnFromCartUC {
 
     ReturnFromCartResponse leaveAndAddToList(CartItem fromCart, ListItem toList) {
         try {
-            addToList(toList);
-            return leave(fromCart);
+            ReturnFromCartResponse response = leave(fromCart);
+            if (response != ReturnFromCartResponse.TOO_MANY)
+                addToList(toList);
+            return response;
         } catch (Exception e) {
             return ReturnFromCartResponse.ERROR;
         }
