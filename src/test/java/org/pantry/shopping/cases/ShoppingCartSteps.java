@@ -1,7 +1,7 @@
 package org.pantry.shopping.cases;
 
 import io.cucumber.java.DataTableType;
-import io.cucumber.java.en.And;
+import io.cucumber.java.en.But;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -14,6 +14,7 @@ import org.pantry.shopping.cases.input.*;
 import org.pantry.shopping.cases.output.CartItemResponse;
 import org.pantry.shopping.cases.output.FetchFromListResponse;
 import org.pantry.shopping.cases.output.FetchToCartResponse;
+import org.pantry.shopping.cases.output.ReturnFromCartResponse;
 import org.pantry.shopping.entities.CartItem;
 
 import java.text.SimpleDateFormat;
@@ -178,5 +179,21 @@ public class ShoppingCartSteps {
         expected.put("OK_NEW", FetchToCartResponse.OK_NEW);
         expected.put("INVALID", FetchToCartResponse.INVALID);
         Assertions.assertEquals(expected.get(response), context.lastFetchToCartResponse);
+    }
+
+    @Then("the last Return from Cart response should be {string}")
+    public void theLastReturnFromCartResponseShouldBe(String response) {
+        Map<String, ReturnFromCartResponse> expected = new HashMap<>();
+        expected.put("OK_ALL", ReturnFromCartResponse.OK_ALL);
+        expected.put("OK_SOME",ReturnFromCartResponse.OK_SOME);
+        expected.put("TOO_MANY",ReturnFromCartResponse.TOO_MANY);
+        expected.put("NOT_FOUND",ReturnFromCartResponse.NOT_FOUND);
+        expected.put("INVALID",ReturnFromCartResponse.INVALID);
+        Assertions.assertEquals(expected.get(response), context.lastReturnFromCartResponse);
+    }
+
+    @Then("my shopping cart should not have an item with id {long}")
+    public void myShoppingCartShouldNotHaveAnItemWithIdLong(Long id) {
+        Assertions.assertTrue(cart.findById(id).isEmpty());
     }
 }
