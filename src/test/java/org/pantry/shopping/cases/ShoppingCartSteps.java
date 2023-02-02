@@ -13,6 +13,7 @@ import org.pantry.shopping.cases.impl.ViewCartImpl;
 import org.pantry.shopping.cases.input.*;
 import org.pantry.shopping.cases.output.CartItemResponse;
 import org.pantry.shopping.cases.output.FetchFromListResponse;
+import org.pantry.shopping.cases.output.FetchToCartResponse;
 import org.pantry.shopping.entities.CartItem;
 
 import java.text.SimpleDateFormat;
@@ -166,5 +167,16 @@ public class ShoppingCartSteps {
             return true;
         });
         Assertions.assertTrue(found);
+    }
+
+    @Then("the last Fetch to Cart response should be {string}")
+    public void theLastFetchToCartResponseShouldBe(String response) {
+        Map<String, FetchToCartResponse> expected = new HashMap<>();
+        expected.put("OK_ALL", FetchToCartResponse.OK_ALL);
+        expected.put("OK_SOME", FetchToCartResponse.OK_SOME);
+        expected.put("OK_INCREASED", FetchToCartResponse.OK_INCREASED);
+        expected.put("OK_NEW", FetchToCartResponse.OK_NEW);
+        expected.put("INVALID", FetchToCartResponse.INVALID);
+        Assertions.assertEquals(expected.get(response), context.lastFetchToCartResponse);
     }
 }
