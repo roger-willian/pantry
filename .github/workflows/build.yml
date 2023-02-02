@@ -1,8 +1,8 @@
-name: Java CI with Gradle
+name: Tests
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "main" ]
 
 jobs:
   build:
@@ -16,10 +16,8 @@ jobs:
       with:
         distribution: 'temurin'
         java-version: '17'
-        cache: 'gradle'
         
     - name: Setup Gradle
       uses: gradle/gradle-build-action@v2
-    
-    - name: Execute Tests
-      run: ./gradlew test
+      with:
+        arguments: test
