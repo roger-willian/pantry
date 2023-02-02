@@ -28,6 +28,8 @@ public class ReturnFromCartImpl implements ReturnFromCartUC {
 
         CartItem fromCart = new CartItem(null, request.quantity(), inCart.get().unit(), inCart.get().name(), inCart.get().pricePerUnit(), inCart.get().expiration());
         ListItem toList = new ListItem(null, request.quantity(), fromCart.unit(), fromCart.name());
+
+        if (!fromCart.isValid() || !toList.isValid()) return ReturnFromCartResponse.INVALID;
         return leaveAndAddToList(fromCart, toList);
     }
 
