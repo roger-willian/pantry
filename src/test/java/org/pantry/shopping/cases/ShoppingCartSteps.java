@@ -1,20 +1,13 @@
 package org.pantry.shopping.cases;
 
 import io.cucumber.java.DataTableType;
-import io.cucumber.java.en.But;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.junit.jupiter.api.Assertions;
-import org.pantry.shopping.cases.impl.FetchFromListImpl;
-import org.pantry.shopping.cases.impl.FetchToCartImpl;
-import org.pantry.shopping.cases.impl.ReturnFromCartImpl;
-import org.pantry.shopping.cases.impl.ViewCartImpl;
+import org.pantry.shopping.cases.impl.*;
 import org.pantry.shopping.cases.input.*;
-import org.pantry.shopping.cases.output.CartItemResponse;
-import org.pantry.shopping.cases.output.FetchFromListResponse;
-import org.pantry.shopping.cases.output.FetchToCartResponse;
-import org.pantry.shopping.cases.output.ReturnFromCartResponse;
+import org.pantry.shopping.cases.output.*;
 import org.pantry.shopping.entities.CartItem;
 
 import java.text.SimpleDateFormat;
@@ -27,8 +20,8 @@ public class ShoppingCartSteps {
     private final ViewCartUC viewCart;
     private final FetchToCartUC fetchToCart;
     private final FetchFromListUC fetchFromList;
-
     private final ReturnFromCartUC returnFromCart;
+    private final DelFromCartUC delFromCart;
 
     public ShoppingCartSteps(ScenarioContext context) {
         this.context = context;
@@ -37,6 +30,7 @@ public class ShoppingCartSteps {
         fetchToCart = new FetchToCartImpl(context.getDatabases());
         fetchFromList = new FetchFromListImpl(context.getDatabases());
         returnFromCart = new ReturnFromCartImpl(context.getDatabases());
+        delFromCart = new DelFromCartImpl(context.getDatabases());
     }
 
     private Integer fromDate(String uiDate) {
@@ -195,5 +189,22 @@ public class ShoppingCartSteps {
     @Then("my shopping cart should not have an item with id {long}")
     public void myShoppingCartShouldNotHaveAnItemWithIdLong(Long id) {
         Assertions.assertTrue(cart.findById(id).isEmpty());
+    }
+
+    @When("I remove {double} units of the item with id {long} from the shopping cart")
+    public void iRemoveUnitsOfTheItemWithIdFromTheShoppingCart(Double qty, Long id) {
+        DelFromCartRequest request = new DelFromCartRequest(id, qty);
+        context.lastDelFromCartResponse = delFromCart.execute(request);
+    }
+
+    @Then("the last Delete fom Cart response should be {string}")
+    public void theLastDeleteFomCartResponseShouldBe(String response) {
+        Map<String, DelFromCartResponse> expected = new HashMap<>();
+        expected.put("OK_ALL", DelFromCartResponse.OK_ALL);
+        expected.put("OK_SOME", DelFromCartResponse.OK_SOME);
+        expected.put("NOT_FOUND", DelFromCartResponse.NOT_FOUND);
+        expected.put("INVALID", DelFromCartResponse.INVALID);
+        expected.put("TOO_MANY", DelFromCartResponse.TOO_MANY);
+        Assertions.assertEquals(expected.get(response), context.lastDelFromCartResponse);
     }
 }

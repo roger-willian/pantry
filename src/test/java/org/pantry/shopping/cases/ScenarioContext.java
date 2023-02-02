@@ -20,8 +20,8 @@ public class ScenarioContext {
     List<CartItemResponse> lastViewCartResponse;
     FetchToCartResponse lastFetchToCartResponse;
     FetchFromListResponse lastFetchFromListResponse;
-
     ReturnFromCartResponse lastReturnFromCartResponse;
+    DelFromCartResponse lastDelFromCartResponse;
 
 
     public ScenarioContext() {
