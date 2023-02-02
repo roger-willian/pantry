@@ -22,7 +22,7 @@ public class FetchFromListImpl extends FetchToCartImpl implements FetchFromListU
         if (inList.isEmpty()) return FetchFromListResponse.NOT_FOUND;
         ListItem fromList = new ListItem(null, request.quantity(), inList.get().unit(), inList.get().name());
         CartItem toCart = new CartItem(null, request.quantity(), fromList.unit(), fromList.name(), request.pricePerUnit(), request.expiration());
-        if (!toCart.isValid()) return FetchFromListResponse.INVALID;
+        if (!toCart.isValid() || !fromList.isValid()) return FetchFromListResponse.INVALID;
 
         FetchToCartResponse response = fetchAndScratchFromList(toCart, fromList);
 
