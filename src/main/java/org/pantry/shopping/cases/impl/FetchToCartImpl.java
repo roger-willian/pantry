@@ -22,6 +22,8 @@ public class FetchToCartImpl implements FetchToCartUC {
     public FetchToCartResponse execute(FetchToCartRequest request) {
         CartItem toCart = new CartItem(null, request.quantity(), request.unit(), request.name(), request.pricePerUnit(), request.expiration());
         ListItem fromList = new ListItem(null, toCart.quantity(), toCart.unit(), toCart.name());
+        if (!toCart.isValid()) return FetchToCartResponse.INVALID;
+
         return fetchAndScratchFromList(toCart, fromList);
     }
 
