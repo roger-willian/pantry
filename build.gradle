@@ -1,59 +1,32 @@
 plugins {
-    id 'java'
-    id 'application'
+    id 'java-library'
 }
-
-group 'org.pantry'
-version '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
 }
 
+group = 'org.pantry'
+version = '1.0'
+sourceCompatibility = '17'
+
 dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testImplementation 'io.cucumber:cucumber-java:7.+'
+    testImplementation 'io.cucumber:cucumber-junit-platform-engine:7.+'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.+'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.+'
+    testImplementation 'org.junit.platform:junit-platform-suite:1.+'
     testImplementation 'org.mockito:mockito-core:3.+'
-    testImplementation 'io.cucumber:cucumber-java:7.10.1'
 
-    testImplementation(platform("org.junit:junit-bom:5.9.2"))
-    testImplementation(platform("io.cucumber:cucumber-bom:7.11.0"))
+    testImplementation(platform('io.cucumber:cucumber-bom:7.+'))
+    testImplementation(platform('org.junit:junit-bom:5.+'))
 
-    testImplementation "io.cucumber:cucumber-junit-platform-engine:7.10.1"
-    testImplementation "org.junit.platform:junit-platform-suite:1.9.2"
-    testImplementation "org.junit.jupiter:junit-jupiter-params:5.3.2"
+    testRuntimeOnly 'info.cukes:cucumber-picocontainer:1.+'
 
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
-    testRuntimeOnly 'info.cukes:cucumber-picocontainer:1.2.6'
-    implementation 'org.apache.commons:commons-csv:1.9.0'
+    implementation 'org.apache.commons:commons-csv:1.+'
 }
 
 test {
     useJUnitPlatform()
     systemProperty("cucumber.junit-platform.naming-strategy", "long")
-}
-
-application {
-    mainClass = 'org.pantry.MainApplication'
-}
-
-jar {
-    manifest {
-        attributes(
-                "Main-Class" : application.mainClass,
-        )
-    }
-    destinationDirectory = file('out/artifacts/Pantry_jar')
-    copy {
-        into jar.destinationDirectory.get()
-        from sourceSets.main.runtimeClasspath.files.findAll {it.path.endsWith(".jar")}
-    }
-}
-
-run {
-    standardInput = System.in
-}
-
-task copyToLib(type: Copy) {
-    into jar.destinationDirectory.get()
-    from dependencies
 }
