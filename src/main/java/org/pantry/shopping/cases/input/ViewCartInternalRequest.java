@@ -1,4 +1,4 @@
 package org.pantry.shopping.cases.input;
 
-public record ViewCartRequest() {
+public record ViewCartInternalRequest() {
 }

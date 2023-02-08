@@ -5,6 +5,7 @@ import org.pantry.shopping.entities.CartItem;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static java.util.function.Predicate.not;
@@ -57,7 +58,7 @@ public class VolatileCartGateway implements ShoppingCartGateway {
 
     @Override
     public Optional<CartItem> findById(Long id) {
-        return items.stream().filter(it->it.id() == id).findAny();
+        return items.stream().filter(it-> Objects.equals(it.id(), id)).findAny();
     }
 
     @Override

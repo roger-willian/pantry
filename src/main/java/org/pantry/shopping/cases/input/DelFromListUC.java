@@ -1,7 +1,7 @@
 package org.pantry.shopping.cases.input;
 
-import org.pantry.shopping.cases.output.DelFromListResponse;
+import org.pantry.shopping.cases.output.DelFromListInternalResponse;
 
 public interface DelFromListUC {
-    DelFromListResponse execute(DelFromListRequest req);
+    DelFromListInternalResponse execute(DelFromListInternalRequest req);
 }

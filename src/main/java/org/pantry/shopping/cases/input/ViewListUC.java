@@ -1,9 +1,9 @@
 package org.pantry.shopping.cases.input;
 
-import org.pantry.shopping.cases.output.ListItemResponse;
+import org.pantry.shopping.cases.output.ListItemInternalResponse;
 
 import java.util.List;
 
 public interface ViewListUC {
-    List<ListItemResponse> execute(ViewListRequest req);
+    List<ListItemInternalResponse> execute(ViewListInternalRequest req);
 }

@@ -1,9 +1,9 @@
 package org.pantry.shopping.cases.input;
 
-import org.pantry.shopping.cases.output.CartItemResponse;
+import org.pantry.shopping.cases.output.CartItemInternalResponse;
 
 import java.util.List;
 
 public interface ViewCartUC {
-    List<CartItemResponse> execute(ViewCartRequest request);
+    List<CartItemInternalResponse> execute(ViewCartInternalRequest request);
 }

@@ -2,9 +2,10 @@ package org.pantry.shopping.cases.impl;
 
 import org.pantry.shopping.cases.data.ShoppingListGateway;
 import org.pantry.shopping.cases.data.GatewaysFactory;
-import org.pantry.shopping.cases.input.AddToListRequest;
+import org.pantry.shopping.cases.input.AddToListInternalRequest;
 import org.pantry.shopping.cases.input.AddToListUC;
-import org.pantry.shopping.cases.output.AddToListResponse;
+import org.pantry.shopping.cases.output.AddToListInternalResponse;
+import org.pantry.shopping.cases.output.ListItemInternalResponse;
 import org.pantry.shopping.entities.ListItem;
 
 public class AddToListImpl implements AddToListUC {
@@ -15,33 +16,46 @@ public class AddToListImpl implements AddToListUC {
     }
 
     @Override
-    public AddToListResponse execute(AddToListRequest req) {
-        ListItem info = new ListItem(null, req.quantity(), req.unit(), req.name());
-        if (list.existsSimilar(info))
-            return increaseInList(info);
-        else
-            return insertIntoList(info);
-    }
-
-    private AddToListResponse insertIntoList(ListItem newItem) {
+    public AddToListInternalResponse execute(AddToListInternalRequest request) {
         try {
-            if (!newItem.isValid()) return AddToListResponse.INVALID;
-            else list.addItem(newItem);
-            return AddToListResponse.OK_NEW;
+            ListItem item = fromRequest(request);
+            if (list.existsSimilar(item))
+                return increaseInList(item);
+            else
+                return insertIntoList(item);
         } catch (Exception e) {
-            return AddToListResponse.ERROR;
+            return AddToListInternalResponse.error();
         }
     }
 
-    private AddToListResponse increaseInList(ListItem increment) {
-        try {
-            ListItem alreadyThere = list.findSimilar(increment).orElseThrow();
-            Double newQuantity = increment.quantity() + alreadyThere.quantity();
-            ListItem increased = new ListItem(alreadyThere.id(), newQuantity, alreadyThere.unit(), alreadyThere.name());
-            list.updateItem(increased);
-            return AddToListResponse.OK_INCREASED;
-        } catch (Exception e) {
-            return AddToListResponse.ERROR;
+    private AddToListInternalResponse insertIntoList(ListItem newItem) {
+        if (!newItem.isValid()) {
+            return AddToListInternalResponse.invalid();
+        } else {
+            ListItem saved = list.addItem(newItem);
+            ListItemInternalResponse response = toResponse(saved);
+            return AddToListInternalResponse.okNew(response);
         }
+    }
+
+    private AddToListInternalResponse increaseInList(ListItem increment) {
+        ListItem alreadyThere = list.findSimilar(increment).orElseThrow();
+        double newQuantity = increment.quantity() + alreadyThere.quantity();
+        ListItem increased = listItemFrom(alreadyThere, newQuantity);
+        ListItem saved = list.updateItem(increased);
+        ListItemInternalResponse response = toResponse(saved);
+        return AddToListInternalResponse.okIncreased(response);
+    }
+
+    private ListItem fromRequest(AddToListInternalRequest request) {
+        return new ListItem(null, request.quantity(), request.unit(), request.name());
+    }
+
+    private ListItemInternalResponse toResponse(ListItem item) {
+        return new ListItemInternalResponse(item.id(), item.quantity(), item.unit(), item.name());
+    }
+
+    private ListItem listItemFrom(ListItem original, double newQuantity) {
+        return new ListItem(original.id(), newQuantity, original.unit(), original.name());
     }
 }

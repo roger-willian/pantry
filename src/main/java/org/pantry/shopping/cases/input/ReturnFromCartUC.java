@@ -1,7 +1,7 @@
 package org.pantry.shopping.cases.input;
 
-import org.pantry.shopping.cases.output.ReturnFromCartResponse;
+import org.pantry.shopping.cases.output.ReturnFromCartInternalResponse;
 
 public interface ReturnFromCartUC {
-    ReturnFromCartResponse execute(ReturnFromCartRequest request);
+    ReturnFromCartInternalResponse execute(ReturnFromCartInternalRequest request);
 }

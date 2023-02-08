@@ -7,9 +7,9 @@ import org.pantry.shopping.cases.impl.AddToListImpl;
 import org.pantry.shopping.cases.impl.DelFromListImpl;
 import org.pantry.shopping.cases.impl.ViewListImpl;
 import org.pantry.shopping.cases.input.*;
-import org.pantry.shopping.cases.output.AddToListResponse;
-import org.pantry.shopping.cases.output.DelFromListResponse;
-import org.pantry.shopping.cases.output.ListItemResponse;
+import org.pantry.shopping.cases.output.AddToListInternalResponse;
+import org.pantry.shopping.cases.output.DelFromListInternalResponse;
+import org.pantry.shopping.cases.output.ListItemInternalResponse;
 import org.pantry.shopping.entities.ListItem;
 
 import java.util.HashMap;
@@ -34,8 +34,8 @@ public class ShoppingListSteps {
     }
 
     @DataTableType
-    public ListItemResponse listItemResponseTransformer(Map<String, String> entry) {
-        return new ListItemResponse(Long.parseLong(entry.get("id")),
+    public ListItemInternalResponse listItemResponseTransformer(Map<String, String> entry) {
+        return new ListItemInternalResponse(Long.parseLong(entry.get("id")),
                 Double.parseDouble(entry.get("qty")),
                 entry.get("unit"),
                 entry.get("product"));
@@ -56,19 +56,19 @@ public class ShoppingListSteps {
 
     @When("I add {double} {string} of {string} to my shopping list")
     public void i_add_qty_units_of_product_to_my_shopping_list(Double qty, String unit, String product) {
-        AddToListRequest request = new AddToListRequest(qty, unit, product);
+        AddToListInternalRequest request = new AddToListInternalRequest(qty, unit, product);
         context.lastAddToListResponse = addToList.execute(request);
     }
 
     @When("I delete the item with id {long} from my shopping list")
     public void i_delete_the_item_with_id_from_my_shopping_list(Long id) {
-        DelFromListRequest request = new DelFromListRequest(id);
+        DelFromListInternalRequest request = new DelFromListInternalRequest(id);
         context.lastDelFromListResponse = delFromList.execute(request);
     }
 
     @When("I look at my shopping list")
     public void iLookAtMyShoppingList() {
-        ViewListRequest request = new ViewListRequest();
+        ViewListInternalRequest request = new ViewListInternalRequest();
         context.lastViewListResponse = viewList.execute(request);
     }
 
@@ -86,25 +86,6 @@ public class ShoppingListSteps {
         Assertions.assertFalse(list.existsSimilar(query));
     }
 
-    @Then("the last Delete fom List response should be {string}")
-    public void theLastDeleteFomListResponseShouldBe(String status) {
-        Map<String, DelFromListResponse> expected = new HashMap<>();
-        expected.put("OK", DelFromListResponse.OK);
-        expected.put("ERROR", DelFromListResponse.ERROR);
-        expected.put("NOT_FOUND", DelFromListResponse.NOT_FOUND);
-        Assertions.assertEquals(context.lastDelFromListResponse, expected.get(status));
-    }
-
-    @Then("the last Add to List response should be {string}")
-    public void theLastAddToListResponseShouldBe(String status) {
-        Map<String, AddToListResponse> expected = new HashMap<>();
-        expected.put("OK_NEW", AddToListResponse.OK_NEW);
-        expected.put("OK_INCREASED", AddToListResponse.OK_INCREASED);
-        expected.put("INVALID", AddToListResponse.INVALID);
-        expected.put("ERROR", AddToListResponse.ERROR);
-        Assertions.assertEquals(context.lastAddToListResponse, expected.get(status));
-    }
-
     @Then("I should see {double} {string} of {string} in my shopping list")
     public void iShouldSeeOfInMyShoppingList(Double qty, String unit, String product) {
         boolean found = context.lastViewListResponse.stream().anyMatch(it->{
@@ -117,7 +98,7 @@ public class ShoppingListSteps {
     }
 
     @Then("I should see exactly {int} items in my shopping list, including:")
-    public void iShouldSeeExactlyItemsInMyShoppingListIncluding(int size, List<ListItemResponse> items) {
+    public void iShouldSeeExactlyItemsInMyShoppingListIncluding(int size, List<ListItemInternalResponse> items) {
         Assertions.assertEquals(size, context.lastViewListResponse.size());
         Assertions.assertTrue(context.lastViewListResponse.containsAll(items));
     }
@@ -133,8 +114,27 @@ public class ShoppingListSteps {
         Assertions.assertTrue(list.findById(id).isEmpty());
     }
 
-    @But("I should not see any item with id {long} in my shopping list")
+    @Then("I should not see any item with id {long} in my shopping list")
     public void iShouldNotSeeAnyItemWithIdInMyShoppingList(long id) {
         Assertions.assertTrue(list.findById(id).isEmpty());
+    }
+
+    @Then("the last Delete fom List response should be {string}")
+    public void theLastDeleteFomListResponseShouldBe(String status) {
+        Map<String, DelFromListInternalResponse.StatusCode> expected = new HashMap<>();
+        expected.put("OK", DelFromListInternalResponse.StatusCode.OK);
+        expected.put("ERROR", DelFromListInternalResponse.StatusCode.ERROR);
+        expected.put("NOT_FOUND", DelFromListInternalResponse.StatusCode.NOT_FOUND);
+        Assertions.assertEquals(expected.get(status), context.lastDelFromListResponse.status());
+    }
+
+    @Then("the last Add to List response should be {string}")
+    public void theLastAddToListResponseShouldBe(String status) {
+        Map<String, AddToListInternalResponse.StatusCode> expected = new HashMap<>();
+        expected.put("OK_NEW", AddToListInternalResponse.StatusCode.OK_NEW);
+        expected.put("OK_INCREASED", AddToListInternalResponse.StatusCode.OK_INCREASED);
+        expected.put("INVALID", AddToListInternalResponse.StatusCode.INVALID);
+        expected.put("ERROR", AddToListInternalResponse.StatusCode.ERROR);
+        Assertions.assertEquals(expected.get(status), context.lastAddToListResponse.status());
     }
 }

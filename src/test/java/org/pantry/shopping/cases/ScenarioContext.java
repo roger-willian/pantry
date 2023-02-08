@@ -13,15 +13,15 @@ public class ScenarioContext {
     private final VolatileCartGateway cart;
     private final VolatileListGateway list;
 
-    AddToListResponse lastAddToListResponse;
-    DelFromListResponse lastDelFromListResponse;
-    List<ListItemResponse> lastViewListResponse;
+    AddToListInternalResponse lastAddToListResponse;
+    DelFromListInternalResponse lastDelFromListResponse;
+    List<ListItemInternalResponse> lastViewListResponse;
 
-    List<CartItemResponse> lastViewCartResponse;
-    FetchToCartResponse lastFetchToCartResponse;
-    FetchFromListResponse lastFetchFromListResponse;
-    ReturnFromCartResponse lastReturnFromCartResponse;
-    DelFromCartResponse lastDelFromCartResponse;
+    List<CartItemInternalResponse> lastViewCartResponse;
+    FetchToCartInternalResponse lastFetchToCartResponse;
+    FetchFromListInternalResponse lastFetchFromListResponse;
+    ReturnFromCartInternalResponse lastReturnFromCartResponse;
+    DelFromCartInternalResponse lastDelFromCartResponse;
 
 
     public ScenarioContext() {

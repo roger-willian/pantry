@@ -1,7 +1,7 @@
 package org.pantry.shopping.cases.input;
 
-import org.pantry.shopping.cases.output.AddToListResponse;
+import org.pantry.shopping.cases.output.AddToListInternalResponse;
 
 public interface AddToListUC {
-    AddToListResponse execute(AddToListRequest item);
+    AddToListInternalResponse execute(AddToListInternalRequest item);
 }

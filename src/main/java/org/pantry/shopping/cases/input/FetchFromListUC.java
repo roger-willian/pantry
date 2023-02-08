@@ -1,7 +1,7 @@
 package org.pantry.shopping.cases.input;
 
-import org.pantry.shopping.cases.output.FetchFromListResponse;
+import org.pantry.shopping.cases.output.FetchFromListInternalResponse;
 
 public interface FetchFromListUC {
-    public FetchFromListResponse execute(FetchFromListRequest request);
+    public FetchFromListInternalResponse execute(FetchFromListInternalRequest request);
 }

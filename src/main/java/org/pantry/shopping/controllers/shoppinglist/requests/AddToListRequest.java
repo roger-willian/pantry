@@ -1,4 +1,4 @@
-package org.pantry.shopping.cases.input;
+package org.pantry.shopping.controllers.shoppinglist.requests;
 
 public record AddToListRequest(Double quantity, String unit, String name) {
 }

@@ -53,7 +53,7 @@ public class ShoppingCartSteps {
     }
 
     @DataTableType
-    public CartItemResponse cartItemResponseTransformer(Map<String, String> entry) {
+    public CartItemInternalResponse cartItemResponseTransformer(Map<String, String> entry) {
         Long id = Long.parseLong(entry.get("id"));
         Double qty = Double.parseDouble(entry.get("qty"));
         String unit = entry.get("unit");
@@ -61,7 +61,7 @@ public class ShoppingCartSteps {
         Integer price = (int) (Double.parseDouble(entry.get("price")) * 100);
         String date = entry.get("expiration");
         Integer expiration = fromDate(date);
-        return new CartItemResponse(id, qty, unit, product, price, expiration);
+        return new CartItemInternalResponse(id, qty, unit, product, price, expiration);
     }
 
     @DataTableType
@@ -83,13 +83,13 @@ public class ShoppingCartSteps {
 
     @When("I return {double} units of the item with id {long} from the shopping cart to the shopping list")
     public void iReturnUnitsOfTheItemWithIdFromTheShoppingCartToTheShoppingList(Double qty, Long id) {
-        ReturnFromCartRequest request = new ReturnFromCartRequest(id, qty);
+        ReturnFromCartInternalRequest request = new ReturnFromCartInternalRequest(id, qty);
         context.lastReturnFromCartResponse = returnFromCart.execute(request);
     }
 
     @When("I look at my shopping cart")
     public void iLookAtMyShoppingCart() {
-        ViewCartRequest request = new ViewCartRequest();
+        ViewCartInternalRequest request = new ViewCartInternalRequest();
         context.lastViewCartResponse = viewCart.execute(request);
     }
 
@@ -97,7 +97,7 @@ public class ShoppingCartSteps {
     public void iFetchOfToMyShoppingCartCostingPerUnitAndExpiringOn(Double qty, String unit, String product, Double price, String date) {
         Integer pricePerUnit = fromPrice(price);
         Integer expiration = fromDate(date);
-        FetchToCartRequest request = new FetchToCartRequest(qty, unit, product, pricePerUnit, expiration);
+        FetchToCartInternalRequest request = new FetchToCartInternalRequest(qty, unit, product, pricePerUnit, expiration);
         context.lastFetchToCartResponse = fetchToCart.execute(request);
     }
 
@@ -105,12 +105,12 @@ public class ShoppingCartSteps {
     public void iFetchUnitsOfTheItemWithIdToMyShoppingCartCosting$PerUnitAndExpiringOn(Double qty, Long id, Double price, String date) {
         Integer pricePerUnit = fromPrice(price);
         Integer expiration = fromDate(date);
-        FetchFromListRequest request = new FetchFromListRequest(id, qty, pricePerUnit, expiration);
+        FetchFromListInternalRequest request = new FetchFromListInternalRequest(id, qty, pricePerUnit, expiration);
         context.lastFetchFromListResponse = fetchFromList.execute(request);
     }
 
     @Then("I should see exactly {int} items in my shopping cart, including:")
-    public void iShouldSeeExactlyItemsInMyShoppingCartIncluding(int size, List<CartItemResponse> items) {
+    public void iShouldSeeExactlyItemsInMyShoppingCartIncluding(int size, List<CartItemInternalResponse> items) {
         Assertions.assertEquals(size, context.lastViewCartResponse.size());
         Assertions.assertTrue(context.lastViewCartResponse.containsAll(items));
     }
@@ -129,17 +129,6 @@ public class ShoppingCartSteps {
            return true;
         });
         Assertions.assertTrue(found);
-    }
-
-    @Then("the last Fetch from List response should be {string}")
-    public void theLastFetchFromListResponseShouldBe(String response) {
-        Map<String, FetchFromListResponse> expected = new HashMap<>();
-        expected.put("OK_ALL", FetchFromListResponse.OK_ALL);
-        expected.put("OK_SOME", FetchFromListResponse.OK_SOME);
-        expected.put("NOT_FOUND", FetchFromListResponse.NOT_FOUND);
-        expected.put("ERROR", FetchFromListResponse.ERROR);
-        expected.put("INVALID", FetchFromListResponse.INVALID);
-        Assertions.assertEquals(expected.get(response), context.lastFetchFromListResponse);
     }
 
     @Then("my shopping cart should have exactly {int} items, including:")
@@ -164,28 +153,6 @@ public class ShoppingCartSteps {
         Assertions.assertTrue(found);
     }
 
-    @Then("the last Fetch to Cart response should be {string}")
-    public void theLastFetchToCartResponseShouldBe(String response) {
-        Map<String, FetchToCartResponse> expected = new HashMap<>();
-        expected.put("OK_ALL", FetchToCartResponse.OK_ALL);
-        expected.put("OK_SOME", FetchToCartResponse.OK_SOME);
-        expected.put("OK_INCREASED", FetchToCartResponse.OK_INCREASED);
-        expected.put("OK_NEW", FetchToCartResponse.OK_NEW);
-        expected.put("INVALID", FetchToCartResponse.INVALID);
-        Assertions.assertEquals(expected.get(response), context.lastFetchToCartResponse);
-    }
-
-    @Then("the last Return from Cart response should be {string}")
-    public void theLastReturnFromCartResponseShouldBe(String response) {
-        Map<String, ReturnFromCartResponse> expected = new HashMap<>();
-        expected.put("OK_ALL", ReturnFromCartResponse.OK_ALL);
-        expected.put("OK_SOME",ReturnFromCartResponse.OK_SOME);
-        expected.put("TOO_MANY",ReturnFromCartResponse.TOO_MANY);
-        expected.put("NOT_FOUND",ReturnFromCartResponse.NOT_FOUND);
-        expected.put("INVALID",ReturnFromCartResponse.INVALID);
-        Assertions.assertEquals(expected.get(response), context.lastReturnFromCartResponse);
-    }
-
     @Then("my shopping cart should not have an item with id {long}")
     public void myShoppingCartShouldNotHaveAnItemWithIdLong(Long id) {
         Assertions.assertTrue(cart.findById(id).isEmpty());
@@ -193,18 +160,51 @@ public class ShoppingCartSteps {
 
     @When("I remove {double} units of the item with id {long} from the shopping cart")
     public void iRemoveUnitsOfTheItemWithIdFromTheShoppingCart(Double qty, Long id) {
-        DelFromCartRequest request = new DelFromCartRequest(id, qty);
+        DelFromCartInternalRequest request = new DelFromCartInternalRequest(id, qty);
         context.lastDelFromCartResponse = delFromCart.execute(request);
+    }
+
+    @Then("the last Fetch from List response should be {string}")
+    public void theLastFetchFromListResponseShouldBe(String response) {
+        Map<String, FetchFromListInternalResponse.StatusCode> expected = new HashMap<>();
+        expected.put("OK_ALL", FetchFromListInternalResponse.StatusCode.OK_ALL);
+        expected.put("OK_SOME", FetchFromListInternalResponse.StatusCode.OK_SOME);
+        expected.put("NOT_FOUND", FetchFromListInternalResponse.StatusCode.NOT_FOUND);
+        expected.put("ERROR", FetchFromListInternalResponse.StatusCode.ERROR);
+        expected.put("INVALID", FetchFromListInternalResponse.StatusCode.INVALID);
+        Assertions.assertEquals(expected.get(response), context.lastFetchFromListResponse.status());
+    }
+
+    @Then("the last Fetch to Cart response should be {string}")
+    public void theLastFetchToCartResponseShouldBe(String response) {
+        Map<String, FetchToCartInternalResponse.StatusCode> expected = new HashMap<>();
+        expected.put("OK_ALL", FetchToCartInternalResponse.StatusCode.OK_ALL);
+        expected.put("OK_SOME", FetchToCartInternalResponse.StatusCode.OK_SOME);
+        expected.put("OK_INCREASED", FetchToCartInternalResponse.StatusCode.OK_INCREASED);
+        expected.put("OK_NEW", FetchToCartInternalResponse.StatusCode.OK_NEW);
+        expected.put("INVALID", FetchToCartInternalResponse.StatusCode.INVALID);
+        Assertions.assertEquals(expected.get(response), context.lastFetchToCartResponse.status());
+    }
+
+    @Then("the last Return from Cart response should be {string}")
+    public void theLastReturnFromCartResponseShouldBe(String response) {
+        Map<String, ReturnFromCartInternalResponse.StatusCode> expected = new HashMap<>();
+        expected.put("OK_ALL", ReturnFromCartInternalResponse.StatusCode.OK_ALL);
+        expected.put("OK_SOME", ReturnFromCartInternalResponse.StatusCode.OK_SOME);
+        expected.put("TOO_MANY", ReturnFromCartInternalResponse.StatusCode.TOO_MANY);
+        expected.put("NOT_FOUND", ReturnFromCartInternalResponse.StatusCode.NOT_FOUND);
+        expected.put("INVALID", ReturnFromCartInternalResponse.StatusCode.INVALID);
+        Assertions.assertEquals(expected.get(response), context.lastReturnFromCartResponse.status());
     }
 
     @Then("the last Delete fom Cart response should be {string}")
     public void theLastDeleteFomCartResponseShouldBe(String response) {
-        Map<String, DelFromCartResponse> expected = new HashMap<>();
-        expected.put("OK_ALL", DelFromCartResponse.OK_ALL);
-        expected.put("OK_SOME", DelFromCartResponse.OK_SOME);
-        expected.put("NOT_FOUND", DelFromCartResponse.NOT_FOUND);
-        expected.put("INVALID", DelFromCartResponse.INVALID);
-        expected.put("TOO_MANY", DelFromCartResponse.TOO_MANY);
-        Assertions.assertEquals(expected.get(response), context.lastDelFromCartResponse);
+        Map<String, DelFromCartInternalResponse.StatusCode> expected = new HashMap<>();
+        expected.put("OK_ALL", DelFromCartInternalResponse.StatusCode.OK_ALL);
+        expected.put("OK_SOME", DelFromCartInternalResponse.StatusCode.OK_SOME);
+        expected.put("NOT_FOUND", DelFromCartInternalResponse.StatusCode.NOT_FOUND);
+        expected.put("INVALID", DelFromCartInternalResponse.StatusCode.INVALID);
+        expected.put("TOO_MANY", DelFromCartInternalResponse.StatusCode.TOO_MANY);
+        Assertions.assertEquals(expected.get(response), context.lastDelFromCartResponse.status());
     }
 }

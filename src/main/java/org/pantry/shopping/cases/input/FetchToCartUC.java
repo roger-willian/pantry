@@ -1,7 +1,7 @@
 package org.pantry.shopping.cases.input;
 
-import org.pantry.shopping.cases.output.FetchToCartResponse;
+import org.pantry.shopping.cases.output.FetchToCartInternalResponse;
 
 public interface FetchToCartUC {
-    FetchToCartResponse execute(FetchToCartRequest request);
+    FetchToCartInternalResponse execute(FetchToCartInternalRequest request);
 }
