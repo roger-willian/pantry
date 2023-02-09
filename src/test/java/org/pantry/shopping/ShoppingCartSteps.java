@@ -5,9 +5,6 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.junit.jupiter.api.Assertions;
-import org.pantry.shopping.cases.impl.*;
-import org.pantry.shopping.cases.input.*;
-import org.pantry.shopping.cases.output.*;
 import org.pantry.shopping.controllers.shoppingcart.ShoppingCartController;
 import org.pantry.shopping.controllers.shoppingcart.requests.DelFromCartRequest;
 import org.pantry.shopping.controllers.shoppingcart.requests.FetchToCartRequest;
@@ -17,7 +14,6 @@ import org.pantry.shopping.controllers.shoppingcart.responses.CartItemResponse;
 import org.pantry.shopping.controllers.shoppingcart.responses.DelFromCartResponse;
 import org.pantry.shopping.controllers.shoppingcart.responses.FetchToCartResponse;
 import org.pantry.shopping.controllers.shoppingcart.responses.ReturnFromCartResponse;
-import org.pantry.shopping.controllers.shoppinglist.requests.FetchFromListRequest;
 import org.pantry.shopping.controllers.shoppinglist.responses.FetchFromListResponse;
 import org.pantry.shopping.entities.CartItem;
 
@@ -111,8 +107,8 @@ public class ShoppingCartSteps {
 
     @Then("I should see exactly {int} items in my shopping cart, including:")
     public void iShouldSeeExactlyItemsInMyShoppingCartIncluding(int size, List<CartItemResponse> items) {
-        Assertions.assertEquals(size, context.lastViewCartResponse.size());
-        Assertions.assertTrue(context.lastViewCartResponse.containsAll(items));
+        Assertions.assertEquals(size, context.lastViewCartResponse.items().size());
+        Assertions.assertTrue(context.lastViewCartResponse.items().containsAll(items));
     }
 
     @Then("my shopping cart should have exactly {int} items, including:")

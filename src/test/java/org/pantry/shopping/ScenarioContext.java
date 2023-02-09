@@ -5,16 +5,10 @@ import org.pantry.shopping.cases.ShoppingCasesFactory;
 import org.pantry.shopping.cases.data.GatewaysFactory;
 import org.pantry.shopping.controllers.shoppingcart.ShoppingCartController;
 import org.pantry.shopping.controllers.shoppingcart.ShoppingCartControllerImpl;
-import org.pantry.shopping.controllers.shoppingcart.responses.CartItemResponse;
-import org.pantry.shopping.controllers.shoppingcart.responses.DelFromCartResponse;
-import org.pantry.shopping.controllers.shoppingcart.responses.FetchToCartResponse;
-import org.pantry.shopping.controllers.shoppingcart.responses.ReturnFromCartResponse;
+import org.pantry.shopping.controllers.shoppingcart.responses.*;
 import org.pantry.shopping.controllers.shoppinglist.ShoppingListController;
 import org.pantry.shopping.controllers.shoppinglist.ShoppingListControllerImpl;
-import org.pantry.shopping.controllers.shoppinglist.responses.AddToListResponse;
-import org.pantry.shopping.controllers.shoppinglist.responses.DelFromListResponse;
-import org.pantry.shopping.controllers.shoppinglist.responses.FetchFromListResponse;
-import org.pantry.shopping.controllers.shoppinglist.responses.ListItemResponse;
+import org.pantry.shopping.controllers.shoppinglist.responses.*;
 
 import java.util.List;
 
@@ -28,12 +22,12 @@ public class ScenarioContext {
     AddToListResponse lastAddToListResponse;
     DelFromListResponse lastDelFromListResponse;
     FetchFromListResponse lastFetchFromListResponse;
-    List<ListItemResponse> lastViewListResponse;
+    ViewListResponse lastViewListResponse;
 
     DelFromCartResponse lastDelFromCartResponse;
     FetchToCartResponse lastFetchToCartResponse;
     ReturnFromCartResponse lastReturnFromCartResponse;
-    List<CartItemResponse> lastViewCartResponse;
+    ViewCartResponse lastViewCartResponse;
 
     private final ShoppingCartController cartController;
     private final ShoppingListController listController;

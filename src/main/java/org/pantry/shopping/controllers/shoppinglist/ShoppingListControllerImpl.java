@@ -2,10 +2,7 @@ package org.pantry.shopping.controllers.shoppinglist;
 
 import org.pantry.shopping.cases.ShoppingCasesFactory;
 import org.pantry.shopping.cases.input.*;
-import org.pantry.shopping.cases.output.AddToListInternalResponse;
-import org.pantry.shopping.cases.output.DelFromListInternalResponse;
-import org.pantry.shopping.cases.output.FetchFromListInternalResponse;
-import org.pantry.shopping.cases.output.ListItemInternalResponse;
+import org.pantry.shopping.cases.output.*;
 import org.pantry.shopping.controllers.shoppinglist.presenters.AddToListPresenter;
 import org.pantry.shopping.controllers.shoppinglist.presenters.DelFromListPresenter;
 import org.pantry.shopping.controllers.shoppinglist.presenters.FetchFromListPresenter;
@@ -14,12 +11,8 @@ import org.pantry.shopping.controllers.shoppinglist.requests.AddToListRequest;
 import org.pantry.shopping.controllers.shoppinglist.requests.DelFromListRequest;
 import org.pantry.shopping.controllers.shoppinglist.requests.FetchFromListRequest;
 import org.pantry.shopping.controllers.shoppinglist.requests.ViewListRequest;
-import org.pantry.shopping.controllers.shoppinglist.responses.AddToListResponse;
-import org.pantry.shopping.controllers.shoppinglist.responses.DelFromListResponse;
-import org.pantry.shopping.controllers.shoppinglist.responses.FetchFromListResponse;
-import org.pantry.shopping.controllers.shoppinglist.responses.ListItemResponse;
+import org.pantry.shopping.controllers.shoppinglist.responses.*;
 
-import java.util.List;
 import java.util.Optional;
 
 public class ShoppingListControllerImpl implements ShoppingListController {
@@ -66,10 +59,19 @@ public class ShoppingListControllerImpl implements ShoppingListController {
     @Override
     public void viewList(ViewListRequest request, ViewListPresenter presenter) {
         ViewListInternalRequest internalRequest = new ViewListInternalRequest();
-        List<ListItemInternalResponse> internalResponse = viewList.execute(internalRequest);
-        List<ListItemResponse> response = internalResponse.stream().map(this::itemResponseFrom).toList();
+        ViewListInternalResponse internalResponse = viewList.execute(internalRequest);
+        ViewListResponse response = responseFrom(internalResponse);
 
         presenter.present(response);
+    }
+
+    private ViewListResponse responseFrom(ViewListInternalResponse internalResponse) {
+        ViewListResponse.StatusCode status = switch (internalResponse.status()) {
+            case OK -> ViewListResponse.StatusCode.OK;
+            default -> ViewListResponse.StatusCode.ERROR;
+        };
+
+        return new ViewListResponse(status, internalResponse.items().stream().map(this::itemResponseFrom).toList());
     }
 
     private AddToListResponse responseFrom(AddToListInternalResponse internalResponse) {

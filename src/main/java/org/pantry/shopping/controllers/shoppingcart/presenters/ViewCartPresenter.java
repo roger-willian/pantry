@@ -1,9 +1,7 @@
 package org.pantry.shopping.controllers.shoppingcart.presenters;
 
-import org.pantry.shopping.controllers.shoppingcart.responses.CartItemResponse;
-
-import java.util.List;
+import org.pantry.shopping.controllers.shoppingcart.responses.ViewCartResponse;
 
 public interface ViewCartPresenter {
-    void present(List<CartItemResponse> response);
+    void present(ViewCartResponse response);
 }

@@ -5,7 +5,6 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.junit.jupiter.api.Assertions;
-import org.pantry.shopping.cases.output.ListItemInternalResponse;
 import org.pantry.shopping.controllers.shoppinglist.ShoppingListController;
 import org.pantry.shopping.controllers.shoppinglist.requests.AddToListRequest;
 import org.pantry.shopping.controllers.shoppinglist.requests.DelFromListRequest;
@@ -113,8 +112,8 @@ public class ShoppingListSteps {
 
     @Then("I should see exactly {int} items in my shopping list, including:")
     public void iShouldSeeExactlyItemsInMyShoppingListIncluding(int size, List<ListItemResponse> items) {
-        Assertions.assertEquals(size, context.lastViewListResponse.size());
-        Assertions.assertTrue(context.lastViewListResponse.containsAll(items));
+        Assertions.assertEquals(size, context.lastViewListResponse.items().size());
+        Assertions.assertTrue(context.lastViewListResponse.items().containsAll(items));
     }
 
     @Then("my shopping list should have exactly {int} items, including:")

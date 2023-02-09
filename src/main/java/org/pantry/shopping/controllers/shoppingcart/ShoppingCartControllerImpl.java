@@ -2,10 +2,7 @@ package org.pantry.shopping.controllers.shoppingcart;
 
 import org.pantry.shopping.cases.ShoppingCasesFactory;
 import org.pantry.shopping.cases.input.*;
-import org.pantry.shopping.cases.output.CartItemInternalResponse;
-import org.pantry.shopping.cases.output.DelFromCartInternalResponse;
-import org.pantry.shopping.cases.output.FetchToCartInternalResponse;
-import org.pantry.shopping.cases.output.ReturnFromCartInternalResponse;
+import org.pantry.shopping.cases.output.*;
 import org.pantry.shopping.controllers.shoppingcart.presenters.DelFromCartPresenter;
 import org.pantry.shopping.controllers.shoppingcart.presenters.FetchToCartPresenter;
 import org.pantry.shopping.controllers.shoppingcart.presenters.ReturnFromCartPresenter;
@@ -14,10 +11,7 @@ import org.pantry.shopping.controllers.shoppingcart.requests.DelFromCartRequest;
 import org.pantry.shopping.controllers.shoppingcart.requests.FetchToCartRequest;
 import org.pantry.shopping.controllers.shoppingcart.requests.ReturnFromCartRequest;
 import org.pantry.shopping.controllers.shoppingcart.requests.ViewCartRequest;
-import org.pantry.shopping.controllers.shoppingcart.responses.CartItemResponse;
-import org.pantry.shopping.controllers.shoppingcart.responses.DelFromCartResponse;
-import org.pantry.shopping.controllers.shoppingcart.responses.FetchToCartResponse;
-import org.pantry.shopping.controllers.shoppingcart.responses.ReturnFromCartResponse;
+import org.pantry.shopping.controllers.shoppingcart.responses.*;
 
 import java.util.List;
 
@@ -116,10 +110,20 @@ public class ShoppingCartControllerImpl implements ShoppingCartController {
     @Override
     public void viewCart(ViewCartRequest request, ViewCartPresenter presenter) {
         ViewCartInternalRequest internalRequest = internalRequestFrom(request);
-        List<CartItemInternalResponse> internalResponse = viewCart.execute(internalRequest);
-        List<CartItemResponse> response = internalResponse.stream().map(this::itemResponseFrom).toList();
+        ViewCartInternalResponse internalResponse = viewCart.execute(internalRequest);
+        ViewCartResponse response = responseFrom(internalResponse);
+
 
         presenter.present(response);
+    }
+
+    private ViewCartResponse responseFrom(ViewCartInternalResponse internalResponse) {
+        ViewCartResponse.StatusCode status = switch (internalResponse.status()) {
+            case OK -> ViewCartResponse.StatusCode.OK;
+            default -> ViewCartResponse.StatusCode.ERROR;
+        };
+
+        return new ViewCartResponse(status, internalResponse.items().stream().map(this::itemResponseFrom).toList());
     }
 
     private ViewCartInternalRequest internalRequestFrom(ViewCartRequest request) {
