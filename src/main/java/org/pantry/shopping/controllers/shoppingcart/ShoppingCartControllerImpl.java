@@ -1,5 +1,6 @@
 package org.pantry.shopping.controllers.shoppingcart;
 
+import org.pantry.shopping.cases.ShoppingCasesFactory;
 import org.pantry.shopping.cases.input.*;
 import org.pantry.shopping.cases.output.CartItemInternalResponse;
 import org.pantry.shopping.cases.output.DelFromCartInternalResponse;
@@ -27,7 +28,7 @@ public class ShoppingCartControllerImpl implements ShoppingCartController {
     private final ReturnFromCartUC returnFromCart;
     private final ViewCartUC viewCart;
 
-    public ShoppingCartControllerImpl(UCFactory cases) {
+    public ShoppingCartControllerImpl(ShoppingCasesFactory cases) {
         delFromCart = cases.getDelFromCartUC();
         fetchToCart = cases.getFetchToCartUC();
         returnFromCart = cases.getReturnFromCartUC();
@@ -49,6 +50,7 @@ public class ShoppingCartControllerImpl implements ShoppingCartController {
             case OK_SOME -> DelFromCartResponse.StatusCode.OK_SOME;
             case NOT_FOUND -> DelFromCartResponse.StatusCode.NOT_FOUND;
             case INVALID -> DelFromCartResponse.StatusCode.INVALID;
+            case TOO_MANY -> DelFromCartResponse.StatusCode.TOO_MANY;
             default -> DelFromCartResponse.StatusCode.ERROR;
         };
 

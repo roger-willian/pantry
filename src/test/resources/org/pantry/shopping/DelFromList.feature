@@ -1,5 +1,7 @@
 @Shopping @ShoppingList @Interface @Database
-  Feature: Delete items from the shopping list
+  Feature: Del from list
+
+    Delete items from the shopping list.
 
     Background: There are some items in the shopping list
       Given I have the following items in my shopping list:
@@ -8,7 +10,10 @@
         | 5   | 1.5 | l     | milk    |
         | 2   | 3   | cans  | beans   |
 
-    Scenario: Delete an item from the shopping list
+    Scenario: Valid product
+
+      Delete an item from the shopping list.
+
       When I delete the item with id 2 from my shopping list
       Then the last Delete fom List response should be "OK"
       And my shopping list should have exactly 2 items, including:
@@ -17,7 +22,10 @@
         | 5   | 1.5 | l     | milk    |
       But my shopping list should not have an item with id 2
 
-    Scenario: Try to delete an item with wrong id from the shopping list
+    Scenario: Invalid product
+
+      Try to delete an item with wrong id from the shopping list.
+
       When I delete the item with id 10 from my shopping list
       Then  the last Delete fom List response should be "NOT_FOUND"
       And my shopping list should have exactly 3 items, including:

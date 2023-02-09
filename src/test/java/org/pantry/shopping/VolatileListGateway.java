@@ -1,4 +1,4 @@
-package org.pantry.shopping.cases;
+package org.pantry.shopping;
 
 import org.pantry.shopping.cases.data.ShoppingListGateway;
 import org.pantry.shopping.entities.ListItem;

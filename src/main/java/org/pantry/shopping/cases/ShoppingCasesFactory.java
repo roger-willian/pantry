@@ -1,6 +1,8 @@
-package org.pantry.shopping.cases.input;
+package org.pantry.shopping.cases;
 
-public interface UCFactory {
+import org.pantry.shopping.cases.input.*;
+
+public interface ShoppingCasesFactory {
     ViewListUC getViewListUC();
 
     AddToListUC getAddToShoppingList();

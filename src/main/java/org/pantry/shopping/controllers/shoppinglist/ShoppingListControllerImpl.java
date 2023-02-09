@@ -1,5 +1,6 @@
 package org.pantry.shopping.controllers.shoppinglist;
 
+import org.pantry.shopping.cases.ShoppingCasesFactory;
 import org.pantry.shopping.cases.input.*;
 import org.pantry.shopping.cases.output.AddToListInternalResponse;
 import org.pantry.shopping.cases.output.DelFromListInternalResponse;
@@ -28,7 +29,7 @@ public class ShoppingListControllerImpl implements ShoppingListController {
     private final DelFromListUC delFromList;
     private final FetchFromListUC fetchFromList;
 
-    public ShoppingListControllerImpl(UCFactory cases) {
+    public ShoppingListControllerImpl(ShoppingCasesFactory cases) {
         viewList = cases.getViewListUC();
         addToList = cases.getAddToShoppingList();
         delFromList = cases.getDelFromShoppingList();
