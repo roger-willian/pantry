@@ -24,25 +24,25 @@ public class ReturnFromCartImpl implements ReturnFromCartUC {
 
     @Override
     public ReturnFromCartInternalResponse execute(ReturnFromCartInternalRequest request) {
-        Optional<CartItem> inCart = cart.findById(request.id());
-        if (inCart.isEmpty()) return ReturnFromCartInternalResponse.notFound();
-
-        CartItem fromCart = cartItemMerging(inCart.get(), request);
-        ListItem toList = listItemMerging(fromCart, request);
-
-        if (!fromCart.isValid() || !toList.isValid()) return ReturnFromCartInternalResponse.invalid();
-        return removeAndAddToList(fromCart, toList);
-    }
-
-    ReturnFromCartInternalResponse removeAndAddToList(CartItem fromCart, ListItem toList) {
         try {
-            ReturnFromCartInternalResponse response = remove(fromCart);
-            if (response.status() != ReturnFromCartInternalResponse.StatusCode.TOO_MANY)
-                addToList(toList);
-            return response;
+            Optional<CartItem> inCart = cart.findById(request.id());
+            if (inCart.isEmpty()) return ReturnFromCartInternalResponse.notFound();
+
+            CartItem fromCart = cartItemMerging(inCart.get(), request);
+            ListItem toList = listItemMerging(fromCart, request);
+
+            if (!fromCart.isValid() || !toList.isValid()) return ReturnFromCartInternalResponse.invalid();
+            return removeAndAddToList(fromCart, toList);
         } catch (Exception e) {
             return ReturnFromCartInternalResponse.error();
         }
+    }
+
+    ReturnFromCartInternalResponse removeAndAddToList(CartItem fromCart, ListItem toList) {
+        ReturnFromCartInternalResponse response = remove(fromCart);
+        if (response.status() != ReturnFromCartInternalResponse.StatusCode.TOO_MANY)
+            addToList(toList);
+        return response;
     }
 
     private void addToList(ListItem toList) {

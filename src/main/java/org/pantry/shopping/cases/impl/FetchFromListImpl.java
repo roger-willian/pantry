@@ -20,31 +20,31 @@ public class FetchFromListImpl extends FetchToCartImpl implements FetchFromListU
 
     @Override
     public FetchFromListInternalResponse execute(FetchFromListInternalRequest request) {
-        Optional<ListItem> inList = list.findById(request.id());
-        if (inList.isEmpty()) return FetchFromListInternalResponse.notFound();
-
-        ListItem fromList = listItemMerging(inList.get(), request);
-        CartItem toCart = cartItemMerging(inList.get(), request);
-
-        if (!fromList.isValid() || !toCart.isValid()) return FetchFromListInternalResponse.invalid();
-
-        FetchToCartInternalResponse response = fetchAndScratchFromList(toCart, fromList);
-        return responseFrom(response);
-    }
-
-    private FetchFromListInternalResponse responseFrom(FetchToCartInternalResponse response) {
         try {
-            Optional<ListItemInternalResponse> inList = response.inList();
-            Optional<CartItemInternalResponse> inCart = response.inCart();
-            FetchToCartInternalResponse.StatusCode status = response.status();
-            return switch (status) {
-                case OK_ALL -> FetchFromListInternalResponse.okAll(inCart.orElseThrow());
-                case OK_SOME -> FetchFromListInternalResponse.okSome(inList.orElseThrow(), inCart.orElseThrow());
-                default -> FetchFromListInternalResponse.error();
-            };
+            Optional<ListItem> inList = list.findById(request.id());
+            if (inList.isEmpty()) return FetchFromListInternalResponse.notFound();
+
+            ListItem fromList = listItemMerging(inList.get(), request);
+            CartItem toCart = cartItemMerging(inList.get(), request);
+
+            if (!fromList.isValid() || !toCart.isValid()) return FetchFromListInternalResponse.invalid();
+
+            FetchToCartInternalResponse response = fetchAndScratchFromList(toCart, fromList);
+            return responseFrom(response);
         } catch (Exception e) {
             return FetchFromListInternalResponse.error();
         }
+    }
+
+    private FetchFromListInternalResponse responseFrom(FetchToCartInternalResponse response) {
+        Optional<ListItemInternalResponse> inList = response.inList();
+        Optional<CartItemInternalResponse> inCart = response.inCart();
+        FetchToCartInternalResponse.StatusCode status = response.status();
+        return switch (status) {
+            case OK_ALL -> FetchFromListInternalResponse.okAll(inCart.orElseThrow());
+            case OK_SOME -> FetchFromListInternalResponse.okSome(inList.orElseThrow(), inCart.orElseThrow());
+            default -> FetchFromListInternalResponse.error();
+        };
     }
 
     private ListItem listItemMerging(ListItem original, FetchFromListInternalRequest request) {

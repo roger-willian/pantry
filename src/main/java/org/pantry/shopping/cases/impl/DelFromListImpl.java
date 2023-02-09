@@ -15,18 +15,18 @@ public class DelFromListImpl implements DelFromListUC {
 
     @Override
     public DelFromListInternalResponse execute(DelFromListInternalRequest req) {
-        if (list.findById(req.id()).isPresent())
-            return removeFromList(req.id());
-        else
-            return DelFromListInternalResponse.notFound();
-    }
-
-    private DelFromListInternalResponse removeFromList(Long id) {
         try {
-            list.removeById(id);
-            return DelFromListInternalResponse.ok();
+            if (list.findById(req.id()).isPresent())
+                return removeFromList(req.id());
+            else
+                return DelFromListInternalResponse.notFound();
         } catch (Exception e) {
             return DelFromListInternalResponse.error();
         }
+    }
+
+    private DelFromListInternalResponse removeFromList(Long id) {
+        list.removeById(id);
+        return DelFromListInternalResponse.ok();
     }
 }

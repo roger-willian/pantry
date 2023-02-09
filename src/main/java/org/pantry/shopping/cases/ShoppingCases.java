@@ -35,12 +35,12 @@ public class ShoppingCases implements ShoppingCasesFactory {
     }
 
     @Override
-    public AddToListUC getAddToShoppingList() {
+    public AddToListUC getAddToShoppingListUC() {
         return addToList;
     }
 
     @Override
-    public DelFromListUC getDelFromShoppingList() {
+    public DelFromListUC getDelFromShoppingListUC() {
         return delFromList;
     }
 

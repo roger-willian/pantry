@@ -5,9 +5,9 @@ import org.pantry.shopping.cases.input.*;
 public interface ShoppingCasesFactory {
     ViewListUC getViewListUC();
 
-    AddToListUC getAddToShoppingList();
+    AddToListUC getAddToShoppingListUC();
 
-    DelFromListUC getDelFromShoppingList();
+    DelFromListUC getDelFromShoppingListUC();
 
     ViewCartUC getViewCartUC();
 

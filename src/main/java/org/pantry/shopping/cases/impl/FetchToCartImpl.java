@@ -24,26 +24,26 @@ public class FetchToCartImpl implements FetchToCartUC {
 
     @Override
     public FetchToCartInternalResponse execute(FetchToCartInternalRequest request) {
-        CartItem toCart = cartItemFrom(request);
-        ListItem fromList = listItemFrom(toCart);
-        if (!toCart.isValid() || !fromList.isValid()) return FetchToCartInternalResponse.invalid();
-
-        if (list.existsSimilar(fromList))
-            return fetchAndScratchFromList(toCart, fromList);
-        else
-            return fetchOnly(toCart);
-    }
-
-    protected FetchToCartInternalResponse fetchAndScratchFromList(CartItem toCart, ListItem fromList) {
         try {
-            Optional<ListItemInternalResponse> inList = scratch(fromList);
-            Optional<CartItemInternalResponse> inCart = fetchOnly(toCart).inCart();
+            CartItem toCart = cartItemFrom(request);
+            ListItem fromList = listItemFrom(toCart);
+            if (!toCart.isValid() || !fromList.isValid()) return FetchToCartInternalResponse.invalid();
 
-            return inList.map(it -> FetchToCartInternalResponse.okSome(it, inCart.orElseThrow()))
-                    .orElseGet(() -> FetchToCartInternalResponse.okAll(inCart.orElseThrow()));
+            if (list.existsSimilar(fromList))
+                return fetchAndScratchFromList(toCart, fromList);
+            else
+                return fetchOnly(toCart);
         } catch (Exception e) {
             return FetchToCartInternalResponse.error();
         }
+    }
+
+    protected FetchToCartInternalResponse fetchAndScratchFromList(CartItem toCart, ListItem fromList) {
+        Optional<ListItemInternalResponse> inList = scratch(fromList);
+        Optional<CartItemInternalResponse> inCart = fetchOnly(toCart).inCart();
+
+        return inList.map(it -> FetchToCartInternalResponse.okSome(it, inCart.orElseThrow()))
+                .orElseGet(() -> FetchToCartInternalResponse.okAll(inCart.orElseThrow()));
     }
 
     private Optional<ListItemInternalResponse> scratch(ListItem fromList) {

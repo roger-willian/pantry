@@ -31,8 +31,8 @@ public class ShoppingListControllerImpl implements ShoppingListController {
 
     public ShoppingListControllerImpl(ShoppingCasesFactory cases) {
         viewList = cases.getViewListUC();
-        addToList = cases.getAddToShoppingList();
-        delFromList = cases.getDelFromShoppingList();
+        addToList = cases.getAddToShoppingListUC();
+        delFromList = cases.getDelFromShoppingListUC();
         fetchFromList = cases.getFetchFromListUC();
     }
 
